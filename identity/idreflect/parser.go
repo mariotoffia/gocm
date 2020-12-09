@@ -1,6 +1,7 @@
 package idreflect
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/mariotoffia/gocm/identity"
@@ -98,6 +99,13 @@ func (p *MapperParser) Add(v interface{}) *MapperParser {
 		divider: p.divider,
 		div:     p.divider[0],
 		tag:     p.tag,
+	}
+
+	if mapper.pk == nil {
+
+		p.err = fmt.Errorf("could not find mandatory cm, pk expression on type %T", v)
+		return p
+
 	}
 
 	for i, c := range sn.Childs {

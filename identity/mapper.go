@@ -6,10 +6,10 @@ type IDMapper interface {
 	//
 	// This function do not alter the state of the _v_ parameter, opposed of `Map`
 	// function.
-	AssembleIdentity(v interface{}) (Identity, error)
+	AssembleIdentity(v interface{}) (*ID, error)
 	// ExtractIdentity will lookup the PK and SK in the _v_ parameter and create a
 	// identity from that. This is the opposite from `AssembleIdentity`.
-	ExtractIdentity(v interface{}) (Identity, error)
+	ExtractIdentity(v interface{}) (*ID, error)
 }
 
 // IDObjectMapper maps or resolves a entity identity.
