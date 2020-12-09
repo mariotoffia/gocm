@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mariotoffia/gocm/identity"
-	"github.com/mariotoffia/gocm/identity/idexpr"
+	"github.com/mariotoffia/gocm/cmid"
+	"github.com/mariotoffia/gocm/cmid/idexpr"
 	"github.com/mariotoffia/ssm/parser"
 )
 
-// MapperImpl is a reflection based `identity.IDMapper`
+// MapperImpl is a reflection based `cmid.IDMapper`
 type MapperImpl struct {
 	root    *parser.StructNode
 	pk      *parser.StructNode
@@ -167,18 +167,18 @@ func (rm *MapperImpl) Map(v interface{}) error {
 }
 
 // ExtractIdentity will extract the PK and SK from the _v_ parameter.
-func (rm *MapperImpl) ExtractIdentity(v interface{}) (*identity.ID, error) {
+func (rm *MapperImpl) ExtractIdentity(v interface{}) (*cmid.ID, error) {
 	return rm.extractIdentity(reflect.ValueOf(v).Elem())
 }
 
 // AssembleIdentity will create a new identity from the _v_ instance data.
-func (rm *MapperImpl) AssembleIdentity(v interface{}) (*identity.ID, error) {
+func (rm *MapperImpl) AssembleIdentity(v interface{}) (*cmid.ID, error) {
 	return rm.assembleIdentity(reflect.ValueOf(v).Elem())
 }
 
-func (rm *MapperImpl) extractIdentity(vval reflect.Value) (*identity.ID, error) {
+func (rm *MapperImpl) extractIdentity(vval reflect.Value) (*cmid.ID, error) {
 
-	id := identity.ID{}
+	id := cmid.ID{}
 
 	if rm.pk != nil {
 		id.PK = vval.FieldByIndex(rm.pk.Field.Index).Interface().(string)
@@ -191,9 +191,9 @@ func (rm *MapperImpl) extractIdentity(vval reflect.Value) (*identity.ID, error) 
 	return &id, nil
 }
 
-func (rm *MapperImpl) assembleIdentity(vval reflect.Value) (*identity.ID, error) {
+func (rm *MapperImpl) assembleIdentity(vval reflect.Value) (*cmid.ID, error) {
 
-	id := identity.ID{}
+	id := cmid.ID{}
 	pk := true
 	skipdiv := false
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/mariotoffia/gocm/identity"
+	"github.com/mariotoffia/gocm/cmid"
 	"github.com/mariotoffia/ssm/parser"
 )
 
@@ -22,15 +22,15 @@ func NewParser() *MapperParser {
 
 	return &MapperParser{
 		tp: parser.New("", "", "").
-			RegisterTagParser(identity.IDStandardCMTag, parser.NewTagParser([]string{"name", "pk", "sk"})),
+			RegisterTagParser(cmid.IDStandardCMTag, parser.NewTagParser([]string{"name", "pk", "sk"})),
 		mappers: map[reflect.Type]*MapperImpl{},
-		divider: identity.IDStandardDivider,
-		tag:     identity.IDStandardCMTag,
+		divider: cmid.IDStandardDivider,
+		tag:     cmid.IDStandardCMTag,
 	}
 
 }
 
-// UseDivider changes the standard divider `identity.IDStandarDivider` to _divider_.
+// UseDivider changes the standard divider `cmid.IDStandarDivider` to _divider_.
 //
 // The already `Add()`ed `IDObjectMapper`s are using the previous and all new will
 // use the newly set _divider_. Hence, it is possible to have different dividers in

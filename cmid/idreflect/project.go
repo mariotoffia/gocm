@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/mariotoffia/gocm/identity"
-	"github.com/mariotoffia/gocm/identity/idexpr"
+	"github.com/mariotoffia/gocm/cmid"
+	"github.com/mariotoffia/gocm/cmid/idexpr"
 	"github.com/mariotoffia/ssm/parser"
 )
 
-// ProjectRepositoryImpl implements the `identity.IDProjectRepository`
+// ProjectRepositoryImpl implements the `cmid.IDProjectRepository`
 type ProjectRepositoryImpl struct {
 	tp      *parser.Parser
 	mappers map[reflect.Type]*Projector
@@ -19,10 +19,10 @@ type ProjectRepositoryImpl struct {
 	tag     string
 }
 
-// Projector implements the `identity.IDProjector`
+// Projector implements the `cmid.IDProjector`
 type Projector struct {
 	root    *parser.StructNode
-	expr    identity.Identity
+	expr    cmid.Identity
 	cache   map[string]*parser.StructNode
 	divider string
 	div     byte
@@ -35,11 +35,11 @@ func NewProjectRepository() *ProjectRepositoryImpl {
 	return &ProjectRepositoryImpl{
 		tp: parser.New("", "", "").
 			RegisterTagParser(
-				identity.IDStandardCMTag, parser.NewTagParser([]string{"name", "pk", "sk"}),
+				cmid.IDStandardCMTag, parser.NewTagParser([]string{"name", "pk", "sk"}),
 			),
 		mappers: map[reflect.Type]*Projector{},
-		divider: identity.IDStandardDivider,
-		tag:     identity.IDStandardCMTag,
+		divider: cmid.IDStandardDivider,
+		tag:     cmid.IDStandardCMTag,
 	}
 
 }
@@ -55,7 +55,7 @@ func (pr *ProjectRepositoryImpl) ClearError() *ProjectRepositoryImpl {
 	return pr
 }
 
-// UseDivider changes the standard divider `identity.IDStandarDivider` to _divider_.
+// UseDivider changes the standard divider `cmid.IDStandarDivider` to _divider_.
 //
 // The already `Add()`ed `IDObjectMapper`s are using the previous and all new will
 // use the newly set _divider_. Hence, it is possible to have different dividers in
@@ -84,7 +84,7 @@ func (pr *ProjectRepositoryImpl) UseTag(tag string) *ProjectRepositoryImpl {
 // _PK_ and _SK_ instead.
 func (pr *ProjectRepositoryImpl) AddProjection(
 	v interface{},
-	expr identity.Identity) *ProjectRepositoryImpl {
+	expr cmid.Identity) *ProjectRepositoryImpl {
 
 	reflect.TypeOf(v)
 	sn, err := pr.tp.Parse(reflect.ValueOf(v))
@@ -140,13 +140,13 @@ func (pr *ProjectRepositoryImpl) Projector(v interface{}) *Projector {
 //
 // The returned `Identity` may be used by any implementation to use as _PK_ and _SK_ instead
 // of the default `IDMapper` / `IDObjectMapper`.
-func (p *Projector) Project(v interface{}) (*identity.ID, error) {
+func (p *Projector) Project(v interface{}) (*cmid.ID, error) {
 	return p.assembleIdentity(reflect.ValueOf(v).Elem())
 }
 
-func (p *Projector) assembleIdentity(vval reflect.Value) (*identity.ID, error) {
+func (p *Projector) assembleIdentity(vval reflect.Value) (*cmid.ID, error) {
 
-	id := identity.ID{}
+	id := cmid.ID{}
 	pk := true
 	skipdiv := false
 

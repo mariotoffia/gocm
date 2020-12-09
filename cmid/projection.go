@@ -1,4 +1,4 @@
-package identity
+package cmid
 
 // IDProjectRepository registers and uses `IDProjector`s.
 //

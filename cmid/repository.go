@@ -1,4 +1,4 @@
-package identity
+package cmid
 
 // IDMapperRepository is providing functionality to register entities
 // and create mappers for those.

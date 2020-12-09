@@ -1,4 +1,4 @@
-package identity
+package cmid
 
 // IDMapper maps a entity into a `Identity` or vice versa.
 type IDMapper interface {

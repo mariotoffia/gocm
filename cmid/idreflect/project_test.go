@@ -3,7 +3,7 @@ package idreflect
 import (
 	"testing"
 
-	"github.com/mariotoffia/gocm/identity"
+	"github.com/mariotoffia/gocm/cmid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +19,7 @@ func TestSimplePKSKFieldProjection(t *testing.T) {
 	p := NewProjectRepository().UseDivider("/")
 
 	var test Car
-	m := p.AddProjection(&test, &identity.ID{
+	m := p.AddProjection(&test, &cmid.ID{
 		PK: "1.0.0/{pk}/{year}/{model}",
 	})
 
@@ -58,7 +58,7 @@ func TestUnresolvedEntityWillFailIfPKPropertyIsIncorrect(t *testing.T) {
 
 	p := NewProjectRepository().UseDivider("/")
 
-	m := p.AddProjection(&test, &identity.ID{
+	m := p.AddProjection(&test, &cmid.ID{
 		PK: "1.0.0/{pk}/{year}/{model}",
 	})
 
@@ -95,7 +95,7 @@ func TestResolvedEntityCanProject(t *testing.T) {
 
 	p := NewProjectRepository().UseDivider("/")
 
-	prj := p.AddProjection(&test, &identity.ID{
+	prj := p.AddProjection(&test, &cmid.ID{
 		PK: "1.0.0/{pk}/{year}/{model}",
 	})
 
@@ -119,7 +119,7 @@ func BenchmarkSimplePKSKFieldProjection(t *testing.B) {
 	p := NewProjectRepository().UseDivider("/")
 
 	var test Car
-	m := p.AddProjection(&test, &identity.ID{
+	m := p.AddProjection(&test, &cmid.ID{
 		PK: "1.0.0/{pk}/{year}/{model}",
 	})
 

@@ -1,4 +1,4 @@
-package identity
+package cmid
 
 const (
 	// IDStandardDivider is the standard component, id divider _#_.
