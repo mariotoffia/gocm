@@ -12,6 +12,7 @@ type MapperParser struct {
 	tp      *parser.Parser
 	mappers map[reflect.Type]*MapperImpl
 	divider string
+	tag     string
 	err     error
 }
 
@@ -20,9 +21,10 @@ func NewParser() *MapperParser {
 
 	return &MapperParser{
 		tp: parser.New("", "", "").
-			RegisterTagParser("cm", parser.NewTagParser([]string{"name", "pk", "sk"})),
+			RegisterTagParser(identity.IDStandardCMTag, parser.NewTagParser([]string{"name", "pk", "sk"})),
 		mappers: map[reflect.Type]*MapperImpl{},
 		divider: identity.IDStandardDivider,
+		tag:     identity.IDStandardCMTag,
 	}
 
 }
@@ -34,6 +36,21 @@ func NewParser() *MapperParser {
 // same `MapperParser`.
 func (p *MapperParser) UseDivider(divider string) *MapperParser {
 	p.divider = divider
+	return p
+}
+
+// UseTag changes the standard tag name to control IDMapping.
+//
+// Default is `identityIDStandardCMTag`. This is quite expensive
+// operation since it will allow a new tag parser with the tag name.
+func (p *MapperParser) UseTag(tag string) *MapperParser {
+	p.tag = tag
+
+	p.tp = parser.New("", "", "").
+		RegisterTagParser(identity.IDStandardCMTag,
+			parser.NewTagParser([]string{"name", "pk", "sk"}),
+		)
+
 	return p
 }
 
@@ -75,15 +92,15 @@ func (p *MapperParser) Add(v interface{}) *MapperParser {
 
 	mapper := MapperImpl{
 		root:    sn,
-		pk:      searchFieldWithExpression(sn.Childs, "pk"),
-		sk:      searchFieldWithExpression(sn.Childs, "sk"),
+		pk:      p.searchFieldWithExpression(sn.Childs, "pk"),
+		sk:      p.searchFieldWithExpression(sn.Childs, "sk"),
 		cache:   make(map[string]*parser.StructNode),
 		divider: p.divider,
 	}
 
 	for i, c := range sn.Childs {
-		if c.HasTag("cm") {
-			if v, ok := c.Tag["cm"].GetNamed()["name"]; ok {
+		if c.HasTag(p.tag) {
+			if v, ok := c.Tag[p.tag].GetNamed()["name"]; ok {
 				mapper.cache[v] = &sn.Childs[i]
 			}
 		}
@@ -95,18 +112,18 @@ func (p *MapperParser) Add(v interface{}) *MapperParser {
 }
 
 // searchFieldWithExpression searches the cm tag if the _name_ do exists in the named parameter map.
-func searchFieldWithExpression(childs []parser.StructNode, name string) *parser.StructNode {
+func (p *MapperParser) searchFieldWithExpression(childs []parser.StructNode, name string) *parser.StructNode {
 
 	for _, c := range childs {
-		if c.HasTag("cm") {
+		if c.HasTag(p.tag) {
 
-			if _, ok := c.Tag["cm"].GetNamed()[name]; ok {
+			if _, ok := c.Tag[p.tag].GetNamed()[name]; ok {
 				return &c
 			}
 		}
 
 		if c.HasChildren() {
-			return searchFieldWithExpression(c.Childs, name)
+			return p.searchFieldWithExpression(c.Childs, name)
 		}
 	}
 

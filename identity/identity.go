@@ -3,6 +3,9 @@ package identity
 const (
 	// IDStandardDivider is the standard component, id divider _#_.
 	IDStandardDivider string = "#"
+	// IDStandardCMTag is the standard tag that can be used to decorate
+	// the struct fields (when using the idreflect package.)
+	IDStandardCMTag string = "cm"
 )
 
 // Identity represents a single identity for a instance.

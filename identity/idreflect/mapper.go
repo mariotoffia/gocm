@@ -333,7 +333,7 @@ func searchFieldByCMName(childs []parser.StructNode, name string) *parser.Struct
 		}
 
 		if c.HasChildren() {
-			return searchFieldWithExpression(c.Childs, name)
+			return searchFieldByCMName(c.Childs, name)
 		}
 	}
 
