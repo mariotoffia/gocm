@@ -94,6 +94,34 @@ func TestMapSimplePKSKFieldMapping(t *testing.T) {
 	assert.Equal(t, "S#2001#9-5", car.SK)
 }
 
+func TestMapIdentityCustomTagsAndSeparator(t *testing.T) {
+
+	type Car struct {
+		Brand string `s3:"pk, pk=1.0.0/{pk}/{year}/{model}"`
+		SK    string
+		Model string `s3:"model"`
+		Year  int    `s3:"year"`
+	}
+
+	p := NewParser().UseDivider("/").UseTag("s3")
+
+	var test Car
+	m := p.Add(&test).Mapper(&test)
+
+	assert.Equal(t, nil, p.Error())
+
+	car := Car{
+		Brand: "SAAB",
+		Model: "9-5",
+		Year:  2001,
+	}
+
+	err := m.Map(&car)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, "1.0.0/SAAB/2001/9-5", car.Brand)
+	assert.Equal(t, "", car.SK)
+}
+
 func TestResolveSimplePKSKFieldMapping(t *testing.T) {
 
 	type Car struct {

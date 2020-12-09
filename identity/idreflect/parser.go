@@ -47,7 +47,7 @@ func (p *MapperParser) UseTag(tag string) *MapperParser {
 	p.tag = tag
 
 	p.tp = parser.New("", "", "").
-		RegisterTagParser(identity.IDStandardCMTag,
+		RegisterTagParser(tag,
 			parser.NewTagParser([]string{"name", "pk", "sk"}),
 		)
 
@@ -96,6 +96,8 @@ func (p *MapperParser) Add(v interface{}) *MapperParser {
 		sk:      p.searchFieldWithExpression(sn.Childs, "sk"),
 		cache:   make(map[string]*parser.StructNode),
 		divider: p.divider,
+		div:     p.divider[0],
+		tag:     p.tag,
 	}
 
 	for i, c := range sn.Childs {

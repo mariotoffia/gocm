@@ -18,6 +18,8 @@ type MapperImpl struct {
 	sk      *parser.StructNode
 	cache   map[string]*parser.StructNode
 	divider string
+	div     byte
+	tag     string
 }
 
 // Resolve will resolve any fields that are part of the PK and SK and set those from
@@ -65,7 +67,7 @@ func (rm *MapperImpl) Resolve(v interface{}) error {
 			sn = rm.cache[name]
 
 			if sn == nil {
-				sn = searchFieldByCMName(rm.root.Childs, name)
+				sn = rm.searchFieldByCMName(rm.root.Childs, name)
 			}
 
 			var val string
@@ -81,21 +83,21 @@ func (rm *MapperImpl) Resolve(v interface{}) error {
 		},
 	}
 
-	expr := rm.pk.Tag["cm"].GetNamed()["pk"]
+	expr := rm.pk.Tag[rm.tag].GetNamed()["pk"]
 
 	optionalIncluded = len(strings.Split(id.PK, rm.divider)) == len(strings.Split(expr, rm.divider))
 
-	idexpr.Parse(expr, pcb)
+	idexpr.Parse(rm.divider, expr, pcb)
 
 	if rm.sk != nil {
 
-		expr = rm.sk.Tag["cm"].GetNamed()["sk"]
+		expr = rm.sk.Tag[rm.tag].GetNamed()["sk"]
 		pk = false
 		idx = 0
 
 		optionalIncluded = len(strings.Split(id.SK, rm.divider)) == len(strings.Split(expr, rm.divider))
 
-		idexpr.Parse(expr, pcb)
+		idexpr.Parse(rm.divider, expr, pcb)
 	}
 
 	return err
@@ -227,7 +229,7 @@ func (rm *MapperImpl) assembleIdentity(vval reflect.Value) (*identity.ID, error)
 			sn = rm.cache[name]
 
 			if sn == nil {
-				sn = searchFieldByCMName(rm.root.Childs, name)
+				sn = rm.searchFieldByCMName(rm.root.Childs, name)
 			}
 
 			if nil == sn {
@@ -296,44 +298,46 @@ func (rm *MapperImpl) assembleIdentity(vval reflect.Value) (*identity.ID, error)
 	}
 
 	if rm.pk != nil {
-		e := rm.pk.Tag["cm"].GetNamed()["pk"]
+		e := rm.pk.Tag[rm.tag].GetNamed()["pk"]
 		expr = &e
-		idexpr.Parse(*expr, pcb)
+		idexpr.Parse(rm.divider, *expr, pcb)
 	}
 
 	if rm.sk != nil {
-		e := rm.sk.Tag["cm"].GetNamed()["sk"]
+		e := rm.sk.Tag[rm.tag].GetNamed()["sk"]
 		expr = &e
 		pk = false
-		idexpr.Parse(*expr, pcb)
+		idexpr.Parse(rm.divider, *expr, pcb)
 	}
 
 	pklen := len(id.PK) - 1
-	if id.PK[pklen] == '#' {
+	if id.PK[pklen] == rm.div {
 		id.PK = id.PK[:pklen]
 	}
 
-	sklen := len(id.SK) - 1
-	if id.SK[sklen] == '#' {
-		id.SK = id.SK[:sklen]
+	if rm.sk != nil {
+		sklen := len(id.SK) - 1
+		if id.SK[sklen] == rm.div {
+			id.SK = id.SK[:sklen]
+		}
 	}
 
 	return &id, err
 }
 
 // searchFieldByCMName searches the cm tag if the _name_ do match the named parameter name.
-func searchFieldByCMName(childs []parser.StructNode, name string) *parser.StructNode {
+func (rm *MapperImpl) searchFieldByCMName(childs []parser.StructNode, name string) *parser.StructNode {
 
 	for _, c := range childs {
-		if c.HasTag("cm") {
+		if c.HasTag(rm.tag) {
 
-			if v, ok := c.Tag["cm"].GetNamed()["name"]; ok && v == name {
+			if v, ok := c.Tag[rm.tag].GetNamed()["name"]; ok && v == name {
 				return &c
 			}
 		}
 
 		if c.HasChildren() {
-			return searchFieldByCMName(c.Childs, name)
+			return rm.searchFieldByCMName(c.Childs, name)
 		}
 	}
 

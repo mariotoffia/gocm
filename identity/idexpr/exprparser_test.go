@@ -8,7 +8,7 @@ import (
 
 func TestEmptyExpression(t *testing.T) {
 
-	err := Parse("", &ParserCallback{
+	err := Parse("", "", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -25,7 +25,7 @@ func TestEmptyExpression(t *testing.T) {
 
 func TestIDNotClosingIDGivesError(t *testing.T) {
 
-	err := Parse("{id", &ParserCallback{
+	err := Parse("", "{id", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -42,7 +42,7 @@ func TestIDNotClosingIDGivesError(t *testing.T) {
 
 func TestIDNotClosing2IDGivesError(t *testing.T) {
 
-	err := Parse("{id#", &ParserCallback{
+	err := Parse("", "{id#", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -59,7 +59,7 @@ func TestIDNotClosing2IDGivesError(t *testing.T) {
 
 func TestOptionalIDNotClosingIDGivesError(t *testing.T) {
 
-	err := Parse("{?id", &ParserCallback{
+	err := Parse("", "{?id", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -76,7 +76,7 @@ func TestOptionalIDNotClosingIDGivesError(t *testing.T) {
 
 func TestIDNotOpeningIDGivesError(t *testing.T) {
 
-	err := Parse("id}", &ParserCallback{
+	err := Parse("", "id}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -93,7 +93,7 @@ func TestIDNotOpeningIDGivesError(t *testing.T) {
 
 func TestOptionalIDNotOpeningIDGivesError(t *testing.T) {
 
-	err := Parse("?id}", &ParserCallback{
+	err := Parse("", "?id}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -111,7 +111,7 @@ func TestOptionalIDNotOpeningIDGivesError(t *testing.T) {
 func TestSingleComponent(t *testing.T) {
 
 	components := 0
-	err := Parse("BLD", &ParserCallback{
+	err := Parse("", "BLD", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -132,7 +132,7 @@ func TestSingleComponent(t *testing.T) {
 func TestSingleID(t *testing.T) {
 
 	ids := 0
-	err := Parse("{pelle}", &ParserCallback{
+	err := Parse("", "{pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -154,7 +154,7 @@ func TestSingleID(t *testing.T) {
 func TestSingleOptionalID(t *testing.T) {
 
 	ids := 0
-	err := Parse("{?pelle}", &ParserCallback{
+	err := Parse("", "{?pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -175,7 +175,7 @@ func TestSingleOptionalID(t *testing.T) {
 
 func TestDividerAtFirstPosWithNothingElseShallFail(t *testing.T) {
 
-	err := Parse("#", &ParserCallback{
+	err := Parse("", "#", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -192,7 +192,7 @@ func TestDividerAtFirstPosWithNothingElseShallFail(t *testing.T) {
 func TestTwoComponents(t *testing.T) {
 
 	components := 0
-	err := Parse("BLD#TS", &ParserCallback{
+	err := Parse("", "BLD#TS", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 		},
@@ -213,7 +213,7 @@ func TestTwoComponents(t *testing.T) {
 func TestTwoIDs(t *testing.T) {
 
 	ids := 0
-	err := Parse("{id1}#{id2}", &ParserCallback{
+	err := Parse("", "{id1}#{id2}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 		},
@@ -236,7 +236,7 @@ func TestTwoIDs(t *testing.T) {
 func TestTwoOptionalIDsIsNotAllowed(t *testing.T) {
 
 	ids := 0
-	err := Parse("{?id1}#{?id2}", &ParserCallback{
+	err := Parse("", "{?id1}#{?id2}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 		},
@@ -257,7 +257,7 @@ func TestTwoOptionalIDsIsNotAllowed(t *testing.T) {
 func TestSingleComponentAndID(t *testing.T) {
 
 	invokes := 0
-	err := Parse("BLD#{pelle}", &ParserCallback{
+	err := Parse("", "BLD#{pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 			invokes++
@@ -283,7 +283,7 @@ func TestSingleComponentAndID(t *testing.T) {
 func TestSingleComponentAndOptionalID(t *testing.T) {
 
 	invokes := 0
-	err := Parse("BLD#{?pelle}", &ParserCallback{
+	err := Parse("", "BLD#{?pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 			invokes++
@@ -309,7 +309,7 @@ func TestSingleComponentAndOptionalID(t *testing.T) {
 func TestComplexExpression(t *testing.T) {
 
 	result := ""
-	err := Parse("BLD#{cd}#TS#{?pg}#{p}#{d}", &ParserCallback{
+	err := Parse("", "BLD#{cd}#TS#{?pg}#{p}#{d}", &ParserCallback{
 		DivFunc: func(index int) {
 			result += "#"
 		},
@@ -343,6 +343,6 @@ func BenchmarkComplexExpression(t *testing.B) {
 	}
 
 	for i := 0; i < t.N; i++ {
-		Parse(expr, pcb)
+		Parse("", expr, pcb)
 	}
 }

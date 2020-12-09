@@ -4,7 +4,7 @@ import "fmt"
 
 // ExpressionParserCallback is invoked when parsing the expression.
 type ExpressionParserCallback interface {
-	// Divider is called when a '#' is encountered.
+	// Divider is called when a _divider_ is encountered.
 	//
 	// The _index_ is the ordinal of the expression, not
 	// the string index.
@@ -46,11 +46,18 @@ func (pc *ParserCallback) ID(index int, optional bool, name string) {
 // value. When a {?id} is encountered, it is optional and if empty and
 // has subsequent divider (#), it will be omitted.
 //
+// If a empty _divider_ it will default to use '#' as divider. A divider
+// may never be more than one rune in length.
+//
 // NOTE: Only one optional parameter is allowed since it is not possible
 // reverse engineer which of the optional parameter is not present if multiple.
-func Parse(expr string, cb ExpressionParserCallback) error {
+func Parse(divider, expr string, cb ExpressionParserCallback) error {
 
-	if expr == "" || expr == "#" {
+	if divider == "" {
+		divider = "#"
+	}
+
+	if expr == "" || expr == divider {
 		return nil
 	}
 
@@ -59,6 +66,7 @@ func Parse(expr string, cb ExpressionParserCallback) error {
 	component := -1
 	index := 0
 	optcnt := 0
+	div := rune(divider[0])
 
 	var i int
 	var c rune
@@ -76,7 +84,7 @@ func Parse(expr string, cb ExpressionParserCallback) error {
 			divskip = true
 		}
 
-		if c == '#' {
+		if c == div {
 
 			if open != -1 {
 				return fmt.Errorf("invalid syntax, expression: %s", expr)
