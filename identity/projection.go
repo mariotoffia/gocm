@@ -33,5 +33,8 @@ type IDProjector interface {
 	//
 	// The returned `Identity` may be used by any implementation to use as _PK_ and _SK_ instead
 	// of the default `IDMapper` / `IDObjectMapper`.
+	//
+	// The _v_ entity passed must be in it's resolved statet to be guaranteed to succeed, otherwise
+	// it may not contain correct information to do the projection.
 	Project(v interface{}) (*ID, error)
 }
