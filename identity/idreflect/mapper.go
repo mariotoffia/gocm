@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/mariotoffia/gocm/identity"
 	"github.com/mariotoffia/gocm/identity/idexpr"
@@ -18,6 +19,128 @@ type MapperImpl struct {
 	cache map[string]*parser.StructNode
 }
 
+// Resolve will resolve any fields that are part of the PK and SK and set those from
+// the PK and SK attributes from the provided instance.
+//
+// This function is never idempotent since it will change the PK or SK. The other fields
+// is overwritten. But the PK and SK is always changed (if not static value).
+func (rm *MapperImpl) Resolve(v interface{}) error {
+
+	vval := reflect.ValueOf(v).Elem()
+	id, err := rm.extractIdentity(vval)
+
+	if id.PK == "" {
+		return fmt.Errorf("No PartitionKey detected in instance %T", v)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	var sn *parser.StructNode
+
+	pk := true
+	idx := 0
+	optionalIncluded := true
+	pkv := strings.Split(id.PK, identity.IDStandardDivider)
+	skv := strings.Split(id.SK, identity.IDStandardDivider)
+
+	pcb := &idexpr.ParserCallback{
+		DivFunc: func(index int) {
+		},
+		CompFunc: func(index int, component string) {
+			idx++
+		},
+		IDFunc: func(index int, optional bool, name string) {
+
+			if err != nil {
+				return
+			}
+
+			if optional && !optionalIncluded {
+				return
+			}
+
+			sn = rm.cache[name]
+
+			if sn == nil {
+				sn = searchFieldByCMName(rm.root.Childs, name)
+			}
+
+			var val string
+			if pk {
+				val = pkv[idx]
+			} else {
+				val = skv[idx]
+			}
+
+			idx++
+
+			err = reflectSetValue(sn, vval, val)
+		},
+	}
+
+	expr := rm.pk.Tag["cm"].GetNamed()["pk"]
+
+	optionalIncluded =
+		len(strings.Split(id.PK, identity.IDStandardDivider)) ==
+			len(strings.Split(expr, identity.IDStandardDivider))
+
+	idexpr.Parse(expr, pcb)
+
+	if rm.sk != nil {
+
+		expr = rm.sk.Tag["cm"].GetNamed()["sk"]
+		pk = false
+		idx = 0
+
+		optionalIncluded =
+			len(strings.Split(id.SK, identity.IDStandardDivider)) ==
+				len(strings.Split(expr, identity.IDStandardDivider))
+
+		idexpr.Parse(expr, pcb)
+	}
+
+	return err
+}
+
+func reflectSetValue(sn *parser.StructNode, vval reflect.Value, val string) error {
+
+	switch sn.Field.Type.Kind() {
+	case reflect.String:
+		vval.FieldByIndex(sn.Field.Index).SetString(val)
+	case reflect.Int, reflect.Int8, reflect.Int16,
+		reflect.Int32, reflect.Int64:
+
+		i, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		vval.FieldByIndex(sn.Field.Index).SetInt(i)
+
+	case reflect.Uint, reflect.Uint8, reflect.Uint16,
+		reflect.Uint32, reflect.Uint64:
+
+		i, err := strconv.ParseUint(val, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		vval.FieldByIndex(sn.Field.Index).SetUint(i)
+
+	case reflect.Float32, reflect.Float64:
+		i, err := strconv.ParseFloat(val, 64)
+		if err != nil {
+			return err
+		}
+
+		vval.FieldByIndex(sn.Field.Index).SetFloat(i)
+	}
+
+	return nil
+}
+
 // Map will map the sub-properties in the instance to form a PK and
 // possibly a SK. This is done one the existing instance, so it should
 // not be used anything else than CM communication.
@@ -27,7 +150,7 @@ type MapperImpl struct {
 func (rm *MapperImpl) Map(v interface{}) error {
 
 	vval := reflect.ValueOf(v).Elem()
-	id, err := rm.identity(vval)
+	id, err := rm.assembleIdentity(vval)
 
 	if err != nil {
 		return err
@@ -44,12 +167,32 @@ func (rm *MapperImpl) Map(v interface{}) error {
 	return nil
 }
 
-// Identity will create a new identity from the _v_ instance data.
-func (rm *MapperImpl) Identity(v interface{}) (*identity.ID, error) {
-	return rm.identity(reflect.ValueOf(v).Elem())
+// ExtractIdentity will extract the PK and SK from the _v_ parameter.
+func (rm *MapperImpl) ExtractIdentity(v interface{}) (*identity.ID, error) {
+	return rm.extractIdentity(reflect.ValueOf(v).Elem())
 }
 
-func (rm *MapperImpl) identity(vval reflect.Value) (*identity.ID, error) {
+// AssembleIdentity will create a new identity from the _v_ instance data.
+func (rm *MapperImpl) AssembleIdentity(v interface{}) (*identity.ID, error) {
+	return rm.assembleIdentity(reflect.ValueOf(v).Elem())
+}
+
+func (rm *MapperImpl) extractIdentity(vval reflect.Value) (*identity.ID, error) {
+
+	id := identity.ID{}
+
+	if rm.pk != nil {
+		id.PK = vval.FieldByIndex(rm.pk.Field.Index).Interface().(string)
+	}
+
+	if rm.sk != nil {
+		id.SK = vval.FieldByIndex(rm.sk.Field.Index).Interface().(string)
+	}
+
+	return &id, nil
+}
+
+func (rm *MapperImpl) assembleIdentity(vval reflect.Value) (*identity.ID, error) {
 
 	id := identity.ID{}
 	pk := true

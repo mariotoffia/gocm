@@ -45,6 +45,9 @@ func (pc *ParserCallback) ID(index int, optional bool, name string) {
 // The _{id}_ is a identifier that must be substituted with a runtime
 // value. When a {?id} is encountered, it is optional and if empty and
 // has subsequent divider (#), it will be omitted.
+//
+// NOTE: Only one optional parameter is allowed since it is not possible
+// reverse engineer which of the optional parameter is not present if multiple.
 func Parse(expr string, cb ExpressionParserCallback) error {
 
 	if expr == "" || expr == "#" {
@@ -55,6 +58,7 @@ func Parse(expr string, cb ExpressionParserCallback) error {
 	open := -1
 	component := -1
 	index := 0
+	optcnt := 0
 
 	var i int
 	var c rune
@@ -62,6 +66,8 @@ func Parse(expr string, cb ExpressionParserCallback) error {
 	for i, c = range expr {
 
 		if c == '?' {
+
+			optcnt++
 
 			if open == -1 {
 				return fmt.Errorf("invalid syntax, expression: %s", expr)
@@ -130,6 +136,10 @@ func Parse(expr string, cb ExpressionParserCallback) error {
 		cb.Component(index, expr[component:i+1])
 		index++
 		component = -1
+	}
+
+	if optcnt > 1 {
+		return fmt.Errorf("invalid syntax, expression: %s, only one optional is allowed", expr)
 	}
 
 	return nil

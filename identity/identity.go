@@ -17,7 +17,7 @@ type Identity interface {
 	SecondaryKey() string
 }
 
-// ID is a `Identity`
+// ID is a `Identity` implementation.
 type ID struct {
 	PK string
 	SK string
@@ -35,18 +35,4 @@ func (id *ID) PartitionKey() string {
 // and thus points to a certain node in the hierarchy.
 func (id *ID) SecondaryKey() string {
 	return id.SK
-}
-
-// IDMapper maps a entity into a `Identity`
-type IDMapper interface {
-	// Map will map the parameter _v_ PartitionKey and SortKey in same instance.
-	//
-	// It expects a pointer to the instance. This function may not be idempotent
-	// since it alters the state inline.
-	Map(v interface{}) error
-	// Indentity will create a new identity instance based of the _v_ parameter.
-	//
-	// This function do not alter the state of the _v_ parameter, opposed of `Map`
-	// function.
-	Identity(v interface{}) (Identity, error)
 }

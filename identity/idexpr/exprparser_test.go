@@ -8,7 +8,7 @@ import (
 
 func TestEmptyExpression(t *testing.T) {
 
-	Parse("", &ParserCallback{
+	err := Parse("", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -20,6 +20,7 @@ func TestEmptyExpression(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 }
 
 func TestIDNotClosingIDGivesError(t *testing.T) {
@@ -110,7 +111,7 @@ func TestOptionalIDNotOpeningIDGivesError(t *testing.T) {
 func TestSingleComponent(t *testing.T) {
 
 	components := 0
-	Parse("BLD", &ParserCallback{
+	err := Parse("BLD", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -125,12 +126,13 @@ func TestSingleComponent(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 }
 
 func TestSingleID(t *testing.T) {
 
 	ids := 0
-	Parse("{pelle}", &ParserCallback{
+	err := Parse("{pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -146,12 +148,13 @@ func TestSingleID(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 }
 
 func TestSingleOptionalID(t *testing.T) {
 
 	ids := 0
-	Parse("{?pelle}", &ParserCallback{
+	err := Parse("{?pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -167,11 +170,12 @@ func TestSingleOptionalID(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 }
 
 func TestDividerAtFirstPosWithNothingElseShallFail(t *testing.T) {
 
-	Parse("#", &ParserCallback{
+	err := Parse("#", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Fail(t, "Should not get a divider")
 		},
@@ -183,11 +187,12 @@ func TestDividerAtFirstPosWithNothingElseShallFail(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 }
 func TestTwoComponents(t *testing.T) {
 
 	components := 0
-	Parse("BLD#TS", &ParserCallback{
+	err := Parse("BLD#TS", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 		},
@@ -200,6 +205,7 @@ func TestTwoComponents(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 	assert.Equal(t, 2, components)
 
 }
@@ -207,7 +213,7 @@ func TestTwoComponents(t *testing.T) {
 func TestTwoIDs(t *testing.T) {
 
 	ids := 0
-	Parse("{id1}#{id2}", &ParserCallback{
+	err := Parse("{id1}#{id2}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 		},
@@ -222,14 +228,15 @@ func TestTwoIDs(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 	assert.Equal(t, 2, ids)
 
 }
 
-func TestTwoOptionalIDs(t *testing.T) {
+func TestTwoOptionalIDsIsNotAllowed(t *testing.T) {
 
 	ids := 0
-	Parse("{?id1}#{?id2}", &ParserCallback{
+	err := Parse("{?id1}#{?id2}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 		},
@@ -244,13 +251,13 @@ func TestTwoOptionalIDs(t *testing.T) {
 	})
 
 	assert.Equal(t, 2, ids)
-
+	assert.Error(t, err)
 }
 
 func TestSingleComponentAndID(t *testing.T) {
 
 	invokes := 0
-	Parse("BLD#{pelle}", &ParserCallback{
+	err := Parse("BLD#{pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 			invokes++
@@ -268,6 +275,7 @@ func TestSingleComponentAndID(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 	assert.Equal(t, 3, invokes)
 
 }
@@ -275,7 +283,7 @@ func TestSingleComponentAndID(t *testing.T) {
 func TestSingleComponentAndOptionalID(t *testing.T) {
 
 	invokes := 0
-	Parse("BLD#{?pelle}", &ParserCallback{
+	err := Parse("BLD#{?pelle}", &ParserCallback{
 		DivFunc: func(index int) {
 			assert.Equal(t, 1, index)
 			invokes++
@@ -293,6 +301,7 @@ func TestSingleComponentAndOptionalID(t *testing.T) {
 		},
 	})
 
+	assert.Equal(t, nil, err)
 	assert.Equal(t, 3, invokes)
 
 }
@@ -300,7 +309,7 @@ func TestSingleComponentAndOptionalID(t *testing.T) {
 func TestComplexExpression(t *testing.T) {
 
 	result := ""
-	Parse("BLD#{cd}#TS#{?pg}#{p}#{d}", &ParserCallback{
+	err := Parse("BLD#{cd}#TS#{?pg}#{p}#{d}", &ParserCallback{
 		DivFunc: func(index int) {
 			result += "#"
 		},
@@ -319,6 +328,7 @@ func TestComplexExpression(t *testing.T) {
 	})
 
 	assert.Equal(t, "BLD#cd#TS#?:pg#p#d", result)
+	assert.Equal(t, nil, err)
 
 }
 
