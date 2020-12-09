@@ -3,6 +3,7 @@ package idreflect
 import (
 	"reflect"
 
+	"github.com/mariotoffia/gocm/identity"
 	"github.com/mariotoffia/ssm/parser"
 )
 
@@ -10,6 +11,7 @@ import (
 type MapperParser struct {
 	tp      *parser.Parser
 	mappers map[reflect.Type]*MapperImpl
+	divider string
 	err     error
 }
 
@@ -20,8 +22,19 @@ func NewParser() *MapperParser {
 		tp: parser.New("", "", "").
 			RegisterTagParser("cm", parser.NewTagParser([]string{"name", "pk", "sk"})),
 		mappers: map[reflect.Type]*MapperImpl{},
+		divider: identity.IDStandardDivider,
 	}
 
+}
+
+// UseDivider changes the standard divider `identity.IDStandarDivider` to _divider_.
+//
+// The already `Add()`ed `IDObjectMapper`s are using the previous and all new will
+// use the newly set _divider_. Hence, it is possible to have different dividers in
+// same `MapperParser`.
+func (p *MapperParser) UseDivider(divider string) *MapperParser {
+	p.divider = divider
+	return p
 }
 
 // Error returns any error state
@@ -61,10 +74,11 @@ func (p *MapperParser) Add(v interface{}) *MapperParser {
 	}
 
 	mapper := MapperImpl{
-		root:  sn,
-		pk:    searchFieldWithExpression(sn.Childs, "pk"),
-		sk:    searchFieldWithExpression(sn.Childs, "sk"),
-		cache: make(map[string]*parser.StructNode),
+		root:    sn,
+		pk:      searchFieldWithExpression(sn.Childs, "pk"),
+		sk:      searchFieldWithExpression(sn.Childs, "sk"),
+		cache:   make(map[string]*parser.StructNode),
+		divider: p.divider,
 	}
 
 	for i, c := range sn.Childs {

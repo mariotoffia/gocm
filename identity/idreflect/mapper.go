@@ -13,10 +13,11 @@ import (
 
 // MapperImpl is a reflection based `identity.IDMapper`
 type MapperImpl struct {
-	root  *parser.StructNode
-	pk    *parser.StructNode
-	sk    *parser.StructNode
-	cache map[string]*parser.StructNode
+	root    *parser.StructNode
+	pk      *parser.StructNode
+	sk      *parser.StructNode
+	cache   map[string]*parser.StructNode
+	divider string
 }
 
 // Resolve will resolve any fields that are part of the PK and SK and set those from
@@ -42,8 +43,8 @@ func (rm *MapperImpl) Resolve(v interface{}) error {
 	pk := true
 	idx := 0
 	optionalIncluded := true
-	pkv := strings.Split(id.PK, identity.IDStandardDivider)
-	skv := strings.Split(id.SK, identity.IDStandardDivider)
+	pkv := strings.Split(id.PK, rm.divider)
+	skv := strings.Split(id.SK, rm.divider)
 
 	pcb := &idexpr.ParserCallback{
 		DivFunc: func(index int) {
@@ -82,9 +83,7 @@ func (rm *MapperImpl) Resolve(v interface{}) error {
 
 	expr := rm.pk.Tag["cm"].GetNamed()["pk"]
 
-	optionalIncluded =
-		len(strings.Split(id.PK, identity.IDStandardDivider)) ==
-			len(strings.Split(expr, identity.IDStandardDivider))
+	optionalIncluded = len(strings.Split(id.PK, rm.divider)) == len(strings.Split(expr, rm.divider))
 
 	idexpr.Parse(expr, pcb)
 
@@ -94,9 +93,7 @@ func (rm *MapperImpl) Resolve(v interface{}) error {
 		pk = false
 		idx = 0
 
-		optionalIncluded =
-			len(strings.Split(id.SK, identity.IDStandardDivider)) ==
-				len(strings.Split(expr, identity.IDStandardDivider))
+		optionalIncluded = len(strings.Split(id.SK, rm.divider)) == len(strings.Split(expr, rm.divider))
 
 		idexpr.Parse(expr, pcb)
 	}
@@ -210,9 +207,9 @@ func (rm *MapperImpl) assembleIdentity(vval reflect.Value) (*identity.ID, error)
 			}
 
 			if pk {
-				id.PK += identity.IDStandardDivider
+				id.PK += rm.divider
 			} else {
-				id.SK += identity.IDStandardDivider
+				id.SK += rm.divider
 			}
 
 		},
