@@ -2,22 +2,22 @@ package cment
 
 import "github.com/mariotoffia/gocm/cmid"
 
-// EntityFactories is a collection of `EntityFactory` instances.
-type EntityFactories interface {
+// EntityFactoryRepository is a collection of `EntityFactory` instances.
+type EntityFactoryRepository interface {
 	// EntityFactories is a aggregate `EntityFactory`
 	EntityFactory
 	// Register will register one or more `EntityFactory` instances.
 	//
 	// NOTE: The registration order matter! The last registered factory may overwrite
 	// a `cmid.ComponentIdentity` and hence take precedence when creating a entity.
-	Register(ef ...EntityFactory) EntityFactories
+	Register(ef ...EntityFactory) EntityFactoryRepository
 	// Freeze will make registration of new `EntityFactory` instances impossible.
-	Freeze() EntityFactories
+	Freeze() EntityFactoryRepository
 	// IsFrozen returns `true` if the instance do not accept any more factory regisrations.
 	IsFrozen() bool
 }
 
-// EntityFactoriesImpl is a default implementation of `EntityFactories`
+// EntityFactoriesImpl is a default implementation of `EntityFactoryRepository`
 type EntityFactoriesImpl struct {
 	// ef contains all `EntityFactory` instances.
 	//
@@ -28,7 +28,7 @@ type EntityFactoriesImpl struct {
 	frozen bool
 }
 
-// NewFactories creates a new empty factories instance
+// NewFactories creates a new empty factory repository instance
 func NewFactories() *EntityFactoriesImpl {
 
 	return &EntityFactoriesImpl{
@@ -39,7 +39,7 @@ func NewFactories() *EntityFactoriesImpl {
 }
 
 // Freeze will make registration of new `EntityFactory` instances impossible.
-func (ef *EntityFactoriesImpl) Freeze() EntityFactories {
+func (ef *EntityFactoriesImpl) Freeze() EntityFactoryRepository {
 	ef.frozen = true
 	return ef
 }
@@ -50,7 +50,7 @@ func (ef *EntityFactoriesImpl) IsFrozen() bool {
 }
 
 // Register will register one or more `EntityFactory` instances.
-func (ef *EntityFactoriesImpl) Register(f ...EntityFactory) EntityFactories {
+func (ef *EntityFactoriesImpl) Register(f ...EntityFactory) EntityFactoryRepository {
 
 	if ef.frozen {
 		return ef
