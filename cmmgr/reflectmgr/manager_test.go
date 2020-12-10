@@ -16,10 +16,9 @@ func TestSimpleFactoryAndMappingResolving(t *testing.T) {
 		Year  int    `cm:"year"`
 	}
 
-	mgr := NewReflectiveEntityManager()
-
 	var test Car
-	mgr.Register(&test)
+	mgr := NewReflectiveEntityManager().Register(&test)
+	mgr.Freeze()
 
 	car := Car{
 		Brand: "SAAB",
@@ -61,10 +60,9 @@ func BenchmarkSimpleFactoryAndMappingResolving(t *testing.B) {
 		Year  int    `cm:"year"`
 	}
 
-	mgr := NewReflectiveEntityManager()
-
 	var test Car
-	mgr.Register(&test)
+	mgr := NewReflectiveEntityManager().Register(&test)
+	mgr.Freeze()
 
 	car := Car{
 		Brand: "SAAB",
