@@ -52,6 +52,10 @@ func (ef *EntityFactoriesImpl) IsFrozen() bool {
 // Register will register one or more `EntityFactory` instances.
 func (ef *EntityFactoriesImpl) Register(f ...EntityFactory) EntityFactories {
 
+	if ef.frozen {
+		return ef
+	}
+
 	for _, fact := range f {
 
 		for _, id := range fact.Identities() {
