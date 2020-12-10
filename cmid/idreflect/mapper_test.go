@@ -1,8 +1,10 @@
 package idreflect
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/mariotoffia/gocm/cmid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,8 +32,8 @@ func TestSimplePKSKFieldMapping(t *testing.T) {
 
 	id, err := m.AssembleIdentity(&car)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "P#SAAB", id.PK)
-	assert.Equal(t, "S#2001#9-5", id.SK)
+	assert.Equal(t, "P#SAAB", id.PartitionKey())
+	assert.Equal(t, "S#2001#9-5", id.SecondaryKey())
 }
 
 func TestExtractIdentitySimplePKSKFieldMapping(t *testing.T) {
@@ -62,8 +64,8 @@ func TestExtractIdentitySimplePKSKFieldMapping(t *testing.T) {
 	rid, err := m.ExtractIdentity(&car)
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "P#SAAB", rid.PK)
-	assert.Equal(t, "S#2001#9-5", rid.SK)
+	assert.Equal(t, "P#SAAB", rid.PartitionKey())
+	assert.Equal(t, "S#2001#9-5", rid.SecondaryKey())
 }
 
 func TestMapSimplePKSKFieldMapping(t *testing.T) {
@@ -181,8 +183,8 @@ func TestSimpleMappingWithEndingOptionalID(t *testing.T) {
 
 	id, err := m.AssembleIdentity(&car)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "P#SAAB", id.PK)
-	assert.Equal(t, "S#2001", id.SK)
+	assert.Equal(t, "P#SAAB", id.PartitionKey())
+	assert.Equal(t, "S#2001", id.SecondaryKey())
 }
 
 func TestSimpleMappingWithMiddleOptionalID(t *testing.T) {
@@ -209,8 +211,8 @@ func TestSimpleMappingWithMiddleOptionalID(t *testing.T) {
 
 	id, err := m.AssembleIdentity(&car)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "P#SAAB", id.PK)
-	assert.Equal(t, "S#2001", id.SK)
+	assert.Equal(t, "P#SAAB", id.PartitionKey())
+	assert.Equal(t, "S#2001", id.SecondaryKey())
 }
 
 func TestResolveSimpleMappingWithMiddleOptionalIDMissing(t *testing.T) {
@@ -281,6 +283,71 @@ func TestResolveSimpleMappingWithMiddleOptionalID(t *testing.T) {
 	assert.Equal(t, "9-5", car.Model)
 	assert.Equal(t, 2001, car.Year)
 
+}
+
+func TestEntityFactoryIDComponentShallMatchPKSKInObject(t *testing.T) {
+
+	type Car struct {
+		Brand string `cm:"pk, pk=P#{pk}"`
+		SK    string `cm:"sk, sk=S#{year}#{model}"`
+		Model string `cm:"model"`
+		Year  int    `cm:"year"`
+	}
+
+	p := NewParser()
+
+	var test Car
+	m := p.Add(&test).Mapper(&test)
+
+	assert.Equal(t, "P", m.Identities()[0].PartitionKey())
+	assert.Equal(t, "S", m.Identities()[0].SecondaryKey())
+
+}
+
+func TestEntityFactoryShallReturnInstanceOnCorrectPKSK(t *testing.T) {
+
+	type Car struct {
+		Brand string `cm:"pk, pk=P#{pk}"`
+		SK    string `cm:"sk, sk=S#{year}#{model}"`
+		Model string `cm:"model"`
+		Year  int    `cm:"year"`
+	}
+
+	p := NewParser()
+
+	var test Car
+	m := p.Add(&test).Mapper(&test)
+
+	i := m.Create(&cmid.ID{PK: "P", SK: "S"})
+
+	assert.NotNil(t, i)
+	assert.Equal(t, "*idreflect.Car", fmt.Sprintf("%T", i))
+
+	car := i.(*Car)
+	car.Brand = "SAAB"
+	car.Model = "9-5"
+	car.Year = 2001
+
+	assert.Equal(t, "SAAB", car.Brand, "Just to make sure it is a valid pointer")
+}
+
+func TestEntityFactoryShallReturnNilOnIncorrectPKSK(t *testing.T) {
+
+	type Car struct {
+		Brand string `cm:"pk, pk=P#{pk}"`
+		SK    string `cm:"sk, sk=S#{year}#{model}"`
+		Model string `cm:"model"`
+		Year  int    `cm:"year"`
+	}
+
+	p := NewParser()
+
+	var test Car
+	m := p.Add(&test).Mapper(&test)
+
+	i := m.Create(&cmid.ID{PK: "P", SK: "A"})
+
+	assert.Nil(t, i)
 }
 
 func BenchmarkSimplePKSKFieldMapping(t *testing.B) {
@@ -374,5 +441,27 @@ func BenchmarkResolveSimplePKSKFieldMapping(t *testing.B) {
 		m.Resolve(&car)
 
 		car.Brand = pk
+	}
+}
+
+func BenchmarkSimpleEntityFactoryCreate(t *testing.B) {
+
+	type Car struct {
+		Brand string `cm:"pk, pk=P#{pk}"`
+		SK    string `cm:"sk, sk=S#{year}#{model}"`
+		Model string `cm:"model"`
+		Year  int    `cm:"year"`
+	}
+
+	p := NewParser()
+
+	var test Car
+	m := p.Add(&test).Mapper(&test)
+	id := cmid.ID{PK: "P", SK: "S"}
+
+	t.ResetTimer()
+
+	for i := 0; i < t.N; i++ {
+		m.Create(&id)
 	}
 }

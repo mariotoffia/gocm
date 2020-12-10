@@ -36,5 +36,5 @@ type IDProjector interface {
 	//
 	// The _v_ entity passed must be in it's resolved statet to be guaranteed to succeed, otherwise
 	// it may not contain correct information to do the projection.
-	Project(v interface{}) (*ID, error)
+	Project(v interface{}) (Identity, error)
 }

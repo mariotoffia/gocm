@@ -20,6 +20,21 @@ type Identity interface {
 	SecondaryKey() string
 }
 
+// ComponentIdentity specifies that the _PK_ and _SK_ is only containing the
+// component parts and not a complete instance identity.
+//
+// .Example ComponentIdentity
+// [source,json]
+// ....
+// { "PK": "P", "SK": "S"}
+// ....
+//
+// The above example denotes that the complete identity is _P#S_ and it may for example
+// resolve to a certain go instance type in the `EntityFactory`.
+type ComponentIdentity interface {
+	Identity
+}
+
 // ID is a `Identity` implementation.
 type ID struct {
 	PK string

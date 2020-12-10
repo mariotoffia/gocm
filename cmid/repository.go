@@ -20,4 +20,6 @@ type IDMapperRepository interface {
 	//
 	// The parameter _v_ is expected to be a pointer to a type.
 	Add(v interface{}) IDMapperRepository
+	// Mappers returns an array of currently supported mappings.
+	Mappers() []IDObjectMapper
 }

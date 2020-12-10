@@ -20,6 +20,30 @@ type MapperImpl struct {
 	divider string
 	div     byte
 	tag     string
+	id      []cmid.ComponentIdentity
+}
+
+// Create uses the _id_ parameter to determine the type
+// of entity to be created if the `EntityFactory` supports it.
+//
+// If the entity could not be created, `nil` is returned. This is realizing
+// `cment.EntityFactory` interface.
+func (rm *MapperImpl) Create(id cmid.ComponentIdentity) interface{} {
+
+	if rm.id[0].PartitionKey() != id.PartitionKey() ||
+		rm.id[0].SecondaryKey() != id.SecondaryKey() {
+
+		return nil
+
+	}
+
+	return reflect.New(rm.root.Type.Elem()).Interface()
+}
+
+// Identities is an array of all types that the factory may
+// be able to create. This is realizing `cment.EntityFactory` interface.
+func (rm *MapperImpl) Identities() []cmid.ComponentIdentity {
+	return rm.id
 }
 
 // Resolve will resolve any fields that are part of the PK and SK and set those from
@@ -167,12 +191,12 @@ func (rm *MapperImpl) Map(v interface{}) error {
 }
 
 // ExtractIdentity will extract the PK and SK from the _v_ parameter.
-func (rm *MapperImpl) ExtractIdentity(v interface{}) (*cmid.ID, error) {
+func (rm *MapperImpl) ExtractIdentity(v interface{}) (cmid.Identity, error) {
 	return rm.extractIdentity(reflect.ValueOf(v).Elem())
 }
 
 // AssembleIdentity will create a new identity from the _v_ instance data.
-func (rm *MapperImpl) AssembleIdentity(v interface{}) (*cmid.ID, error) {
+func (rm *MapperImpl) AssembleIdentity(v interface{}) (cmid.Identity, error) {
 	return rm.assembleIdentity(reflect.ValueOf(v).Elem())
 }
 

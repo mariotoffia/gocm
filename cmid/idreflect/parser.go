@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/mariotoffia/gocm/cmid"
+	"github.com/mariotoffia/gocm/cmid/idexpr"
 	"github.com/mariotoffia/ssm/parser"
 )
 
@@ -12,6 +13,7 @@ import (
 type MapperParser struct {
 	tp      *parser.Parser
 	mappers map[reflect.Type]*MapperImpl
+	cache   []cmid.IDObjectMapper
 	divider string
 	tag     string
 	err     error
@@ -26,8 +28,14 @@ func NewParser() *MapperParser {
 		mappers: map[reflect.Type]*MapperImpl{},
 		divider: cmid.IDStandardDivider,
 		tag:     cmid.IDStandardCMTag,
+		cache:   []cmid.IDObjectMapper{},
 	}
 
+}
+
+// Mappers returns an array of currently supported mappings.
+func (p *MapperParser) Mappers() []cmid.IDObjectMapper {
+	return p.cache
 }
 
 // UseDivider changes the standard divider `cmid.IDStandarDivider` to _divider_.
@@ -108,6 +116,14 @@ func (p *MapperParser) Add(v interface{}) *MapperParser {
 
 	}
 
+	id := &cmid.ID{PK: mapper.pk.Tag[p.tag].GetNamed()["pk"]}
+
+	if mapper.sk != nil {
+		id.SK = mapper.sk.Tag[p.tag].GetNamed()["sk"]
+	}
+
+	mapper.id = []cmid.ComponentIdentity{p.stripToComponents(id)}
+
 	for i, c := range sn.Childs {
 		if c.HasTag(p.tag) {
 			if v, ok := c.Tag[p.tag].GetNamed()["name"]; ok {
@@ -117,8 +133,48 @@ func (p *MapperParser) Add(v interface{}) *MapperParser {
 	}
 
 	p.mappers[reflect.TypeOf(v)] = &mapper
+	p.cache = append(p.cache, &mapper)
 
 	return p
+}
+
+// stripToComponents strips out everything except for the component parts and
+// returns a new instance of `cmid.ID`
+func (p *MapperParser) stripToComponents(id *cmid.ID) *cmid.ID {
+
+	cid := cmid.ID{}
+	pk := true
+
+	pcb := &idexpr.ParserCallback{
+		CompFunc: func(index int, component string) {
+
+			if pk {
+				if cid.PK == "" {
+					cid.PK = component
+				} else {
+					cid.PK += "#" + component
+				}
+				return
+			}
+
+			if cid.SK == "" {
+				cid.SK = component
+			} else {
+				cid.SK += "#" + component
+			}
+		},
+		DivFunc: func(index int) {},
+		IDFunc:  func(index int, optional bool, name string) {},
+	}
+
+	idexpr.Parse(p.divider, id.PK, pcb)
+
+	if id.SK != "" {
+		pk = false
+		idexpr.Parse(p.divider, id.SK, pcb)
+	}
+
+	return &cid
 }
 
 // searchFieldWithExpression searches the cm tag if the _name_ do exists in the named parameter map.
