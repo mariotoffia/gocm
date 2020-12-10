@@ -17,6 +17,12 @@ type IDProjectRepository interface {
 	// wish to have different expressions on same type, you need to create more than one
 	// `IDProjectRepository`.
 	AddProjection(v interface{}, expr Identity) IDProjectRepository
+	// Projection returns a `IDProjector` for the _v_ parameter if earlier registered.
+	Projection(v interface{}) IDProjector
+	// Freeze will make registration of new projections impossible.
+	Freeze() IDProjectRepository
+	// IsFrozen returns `true` if the instance do not accept any more mapping regisrations using `AddProjection()`.
+	IsFrozen() bool
 }
 
 // IDProjector is mapping a entity to a Identity using the registered

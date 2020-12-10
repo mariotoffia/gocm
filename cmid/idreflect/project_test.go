@@ -31,10 +31,10 @@ func TestSimplePKSKFieldProjection(t *testing.T) {
 		Year:  2001,
 	}
 
-	id, err := m.Projector(&test).Project(&car)
+	id, err := m.Projection(&test).Project(&car)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "1.0.0/SAAB/2001/9-5", id.PK)
-	assert.Equal(t, "", id.SK)
+	assert.Equal(t, "1.0.0/SAAB/2001/9-5", id.PartitionKey())
+	assert.Equal(t, "", id.SecondaryKey())
 }
 
 func TestUnresolvedEntityWillFailIfPKPropertyIsIncorrect(t *testing.T) {
@@ -64,10 +64,10 @@ func TestUnresolvedEntityWillFailIfPKPropertyIsIncorrect(t *testing.T) {
 
 	assert.Equal(t, nil, p.Error())
 
-	id, err := m.Projector(&test).Project(&car)
+	id, err := m.Projection(&test).Project(&car)
 	assert.Equal(t, nil, err)
-	assert.NotEqual(t, "1.0.0/SAAB/2001/9-5", id.PK, "since car is not resolved")
-	assert.Equal(t, "", id.SK)
+	assert.NotEqual(t, "1.0.0/SAAB/2001/9-5", id.PartitionKey(), "since car is not resolved")
+	assert.Equal(t, "", id.SecondaryKey())
 }
 
 func TestResolvedEntityCanProject(t *testing.T) {
@@ -101,10 +101,10 @@ func TestResolvedEntityCanProject(t *testing.T) {
 
 	assert.Equal(t, nil, p.Error())
 
-	id, err := prj.Projector(&test).Project(&car)
+	id, err := prj.Projection(&test).Project(&car)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "1.0.0/SAAB/2001/9-5", id.PK, "since car is resolved")
-	assert.Equal(t, "", id.SK)
+	assert.Equal(t, "1.0.0/SAAB/2001/9-5", id.PartitionKey(), "since car is resolved")
+	assert.Equal(t, "", id.SecondaryKey())
 }
 
 func BenchmarkSimplePKSKFieldProjection(t *testing.B) {
@@ -131,7 +131,7 @@ func BenchmarkSimplePKSKFieldProjection(t *testing.B) {
 		Year:  2001,
 	}
 
-	prj := m.Projector(&test)
+	prj := m.Projection(&test)
 
 	t.ResetTimer()
 

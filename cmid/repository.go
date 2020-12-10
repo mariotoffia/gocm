@@ -18,8 +18,13 @@ type IDMapperRepository interface {
 	Mapper(v interface{}) IDObjectMapper
 	// Add creates a new `IdMapper` and stores it in its internal hash.
 	//
-	// The parameter _v_ is expected to be a pointer to a type.
+	// The parameter _v_ is expected to be a pointer to a type. If the repository is `IsFrozen()`
+	// it will silently ignore the `Add()` request.
 	Add(v interface{}) IDMapperRepository
 	// Mappers returns an array of currently supported mappings.
 	Mappers() []IDObjectMapper
+	// Freeze will make registration of new mappings impossible.
+	Freeze() IDMapperRepository
+	// IsFrozen returns `true` if the instance do not accept any more mapping regisrations using `Add()`.
+	IsFrozen() bool
 }

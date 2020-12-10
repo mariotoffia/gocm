@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/mariotoffia/gocm/cment"
 	"github.com/mariotoffia/gocm/cmid"
 	"github.com/stretchr/testify/assert"
 )
@@ -297,7 +298,7 @@ func TestEntityFactoryIDComponentShallMatchPKSKInObject(t *testing.T) {
 	p := NewParser()
 
 	var test Car
-	m := p.Add(&test).Mapper(&test)
+	m := p.Add(&test).Mapper(&test).(cment.EntityFactory)
 
 	assert.Equal(t, "P", m.Identities()[0].PartitionKey())
 	assert.Equal(t, "S", m.Identities()[0].SecondaryKey())
@@ -316,7 +317,7 @@ func TestEntityFactoryShallReturnInstanceOnCorrectPKSK(t *testing.T) {
 	p := NewParser()
 
 	var test Car
-	m := p.Add(&test).Mapper(&test)
+	m := p.Add(&test).Mapper(&test).(cment.EntityFactory)
 
 	i := m.Create(&cmid.ID{PK: "P", SK: "S"})
 
@@ -343,7 +344,7 @@ func TestEntityFactoryShallReturnNilOnIncorrectPKSK(t *testing.T) {
 	p := NewParser()
 
 	var test Car
-	m := p.Add(&test).Mapper(&test)
+	m := p.Add(&test).Mapper(&test).(cment.EntityFactory)
 
 	i := m.Create(&cmid.ID{PK: "P", SK: "A"})
 
@@ -456,7 +457,7 @@ func BenchmarkSimpleEntityFactoryCreate(t *testing.B) {
 	p := NewParser()
 
 	var test Car
-	m := p.Add(&test).Mapper(&test)
+	m := p.Add(&test).Mapper(&test).(cment.EntityFactory)
 	id := cmid.ID{PK: "P", SK: "S"}
 
 	t.ResetTimer()

@@ -17,6 +17,7 @@ type MapperParser struct {
 	divider string
 	tag     string
 	err     error
+	frozen  bool
 }
 
 // NewParser creates a new `MapperParser`
@@ -31,6 +32,16 @@ func NewParser() *MapperParser {
 		cache:   []cmid.IDObjectMapper{},
 	}
 
+}
+
+// Freeze will make registration of new mappings impossible.
+func (p *MapperParser) Freeze() cmid.IDMapperRepository {
+	return p
+}
+
+// IsFrozen returns `true` if the instance do not accept any more mapping regisrations using `Add()`.
+func (p *MapperParser) IsFrozen() bool {
+	return p.frozen
 }
 
 // Mappers returns an array of currently supported mappings.
@@ -69,13 +80,13 @@ func (p *MapperParser) Error() error {
 }
 
 // ClearError will clear any error state
-func (p *MapperParser) ClearError() *MapperParser {
+func (p *MapperParser) ClearError() cmid.IDMapperRepository {
 	p.err = nil
 	return p
 }
 
 // Mapper gets the mapper for the parameter _v_ (as it was registered using `Add()`).
-func (p *MapperParser) Mapper(v interface{}) *MapperImpl {
+func (p *MapperParser) Mapper(v interface{}) cmid.IDObjectMapper {
 
 	if m, ok := p.mappers[reflect.TypeOf(v)]; ok {
 		return m
@@ -87,7 +98,11 @@ func (p *MapperParser) Mapper(v interface{}) *MapperImpl {
 // Add creates a new reflection based `IdMapper` and stores it in its internal hash.
 //
 // The parameter _v_ is expected to be a pointer to a type.
-func (p *MapperParser) Add(v interface{}) *MapperParser {
+func (p *MapperParser) Add(v interface{}) cmid.IDMapperRepository {
+
+	if p.frozen {
+		return p
+	}
 
 	reflect.TypeOf(v)
 	sn, err := p.tp.Parse(reflect.ValueOf(v))

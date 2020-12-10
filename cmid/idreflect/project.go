@@ -17,6 +17,7 @@ type ProjectRepositoryImpl struct {
 	err     error
 	divider string
 	tag     string
+	frozen  bool
 }
 
 // Projector implements the `cmid.IDProjector`
@@ -42,6 +43,17 @@ func NewProjectRepository() *ProjectRepositoryImpl {
 		tag:     cmid.IDStandardCMTag,
 	}
 
+}
+
+// Freeze will make registration of new projections impossible.
+func (pr *ProjectRepositoryImpl) Freeze() cmid.IDProjectRepository {
+	pr.frozen = true
+	return pr
+}
+
+// IsFrozen returns `true` if the instance do not accept any more mapping regisrations using `AddProjection()`.
+func (pr *ProjectRepositoryImpl) IsFrozen() bool {
+	return pr.frozen
 }
 
 // Error returns any error state
@@ -84,7 +96,11 @@ func (pr *ProjectRepositoryImpl) UseTag(tag string) *ProjectRepositoryImpl {
 // _PK_ and _SK_ instead.
 func (pr *ProjectRepositoryImpl) AddProjection(
 	v interface{},
-	expr cmid.Identity) *ProjectRepositoryImpl {
+	expr cmid.Identity) cmid.IDProjectRepository {
+
+	if pr.frozen {
+		return pr
+	}
 
 	reflect.TypeOf(v)
 	sn, err := pr.tp.Parse(reflect.ValueOf(v))
@@ -125,8 +141,8 @@ func (pr *ProjectRepositoryImpl) AddProjection(
 	return pr
 }
 
-// Projector gets the projector for the parameter _v_ (as it was registered using `AddProjection()`).
-func (pr *ProjectRepositoryImpl) Projector(v interface{}) *Projector {
+// Projection gets the projector for the parameter _v_ (as it was registered using `AddProjection()`).
+func (pr *ProjectRepositoryImpl) Projection(v interface{}) cmid.IDProjector {
 
 	if m, ok := pr.mappers[reflect.TypeOf(v)]; ok {
 		return m
@@ -140,7 +156,7 @@ func (pr *ProjectRepositoryImpl) Projector(v interface{}) *Projector {
 //
 // The returned `Identity` may be used by any implementation to use as _PK_ and _SK_ instead
 // of the default `IDMapper` / `IDObjectMapper`.
-func (p *Projector) Project(v interface{}) (*cmid.ID, error) {
+func (p *Projector) Project(v interface{}) (cmid.Identity, error) {
 	return p.assembleIdentity(reflect.ValueOf(v).Elem())
 }
 
