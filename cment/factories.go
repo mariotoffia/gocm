@@ -11,6 +11,10 @@ type EntityFactories interface {
 	// NOTE: The registration order matter! The last registered factory may overwrite
 	// a `cmid.ComponentIdentity` and hence take precedence when creating a entity.
 	Register(ef ...EntityFactory) EntityFactories
+	// Freeze will make registration of new `EntityFactory` instances impossible.
+	Freeze() EntityFactories
+	// IsFrozen returns `true` if the instance do not accept any more factory regisrations.
+	IsFrozen() bool
 }
 
 // EntityFactoriesImpl is a default implementation of `EntityFactories`
@@ -20,7 +24,8 @@ type EntityFactoriesImpl struct {
 	// The key is the rendered `cmid.ComponentIdentity`.
 	ef map[string]EntityFactory
 	// comp is all components that aggregate may handle.
-	comp []cmid.ComponentIdentity
+	comp   []cmid.ComponentIdentity
+	frozen bool
 }
 
 // NewFactories creates a new empty factories instance
@@ -33,8 +38,19 @@ func NewFactories() *EntityFactoriesImpl {
 
 }
 
+// Freeze will make registration of new `EntityFactory` instances impossible.
+func (ef *EntityFactoriesImpl) Freeze() EntityFactories {
+	ef.frozen = true
+	return ef
+}
+
+// IsFrozen returns `true` if the instance do not accept any more factory regisrations.
+func (ef *EntityFactoriesImpl) IsFrozen() bool {
+	return ef.frozen
+}
+
 // Register will register one or more `EntityFactory` instances.
-func (ef *EntityFactoriesImpl) Register(f ...EntityFactory) *EntityFactoriesImpl {
+func (ef *EntityFactoriesImpl) Register(f ...EntityFactory) EntityFactories {
 
 	for _, fact := range f {
 
