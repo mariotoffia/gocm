@@ -26,19 +26,20 @@ const (
 	CondOperEndsWith ConditionOperation = "EW"
 )
 
-type condition struct {
+// ConditionImpl is a binary / unary condition.
+type ConditionImpl struct {
 	ExpressionImpl
 
 	oper  ConditionOperation
-	child *postcondition
+	child *PostconditionImpl
 }
 
 // Condition is the generic condition function.
-func (c *condition) Condition(oper ConditionOperation) *postcondition {
+func (c *ConditionImpl) Condition(oper ConditionOperation) *PostconditionImpl {
 
 	c.oper = oper
 
-	c.child = &postcondition{ExpressionImpl: &ExpressionImpl{
+	c.child = &PostconditionImpl{ExpressionImpl: &ExpressionImpl{
 		root:      c.root,
 		condition: c.condition,
 	}}

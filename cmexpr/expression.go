@@ -1,5 +1,10 @@
 package cmexpr
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // ExpressionType specifies the type of Expression.
 type ExpressionType string
 
@@ -48,7 +53,22 @@ func (e *ExpressionImpl) Cond() *QualifierImpl {
 func (e *ExpressionImpl) Build() {
 	// We got build. lets enumerate the trees.
 
-	if e.root.condition != nil {
+	if e.condition != nil {
+
+		qualifier := e.condition
+
+		expr := &ConditionExpr{
+			LeftType:   qualifier.t,
+			LeftName:   qualifier.name,
+			Condition:  qualifier.child.oper,
+			RightName:  qualifier.child.child.name,
+			RightType:  qualifier.child.child.t,
+			RightValue: qualifier.child.child.value,
+		}
+
+		data, _ := json.Marshal(expr)
+		fmt.Println(string(data))
+
 		// Build until x.child.expression == e (i.e. skip this e since it is a "dead" child
 	}
 }

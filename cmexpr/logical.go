@@ -1,20 +1,23 @@
 package cmexpr
 
-type logical struct {
+// LogicalImpl expresses logical operations such as AND, OR.
+type LogicalImpl struct {
 	*ExpressionImpl
 
 	and []Expression
 	or  []Expression
 	not Expression
 
-	child *logical
+	child *LogicalImpl
 }
 
-func (l *logical) And(expr ...Expression) *logical {
+// And is takes a left hand side and a right hand side. It will combine
+// to evaluate true in both expressions to be true.
+func (l *LogicalImpl) And(expr ...Expression) *LogicalImpl {
 
 	l.and = expr
 
-	l.child = &logical{ExpressionImpl: &ExpressionImpl{
+	l.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
 		root:      l.root,
 		condition: l.condition,
 	}}
@@ -23,11 +26,13 @@ func (l *logical) And(expr ...Expression) *logical {
 
 }
 
-func (l *logical) Or(expr ...Expression) *logical {
+// Or is takes a left hand side and a right hand side. Either side needs
+// to be true to result in true.
+func (l *LogicalImpl) Or(expr ...Expression) *LogicalImpl {
 
 	l.or = expr
 
-	l.child = &logical{ExpressionImpl: &ExpressionImpl{
+	l.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
 		root:      l.root,
 		condition: l.condition,
 	}}
@@ -36,11 +41,12 @@ func (l *logical) Or(expr ...Expression) *logical {
 
 }
 
-func (l *logical) Not(expr Expression) *logical {
+// Not is a unary expression to negate the right hand side expression.
+func (l *LogicalImpl) Not(expr Expression) *LogicalImpl {
 
 	l.not = expr
 
-	l.child = &logical{ExpressionImpl: &ExpressionImpl{
+	l.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
 		root:      l.root,
 		condition: l.condition,
 	}}

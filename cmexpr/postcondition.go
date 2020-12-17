@@ -1,20 +1,36 @@
 package cmexpr
 
-type postcondition struct {
-	*ExpressionImpl
+// PostConditionType specifies the type of the post condition
+type PostConditionType string
 
-	sk    string
-	pk    string
-	att   string
+const (
+	// PostConditionPK is a partition key
+	PostConditionPK PostConditionType = "pk"
+	// PostConditionSK is a secondary key
+	PostConditionSK PostConditionType = "sk"
+	// PostConditionAttribute is a attribute / property name
+	PostConditionAttribute PostConditionType = "att"
+	// PostConditionValue is a value, values or a list of values.
+	PostConditionValue PostConditionType = "value"
+)
+
+// PostconditionImpl is the right hand of the condition.
+type PostconditionImpl struct {
+	*ExpressionImpl
+	name  string
+	t     PostConditionType
 	value []interface{}
-	child *logical
+	child *LogicalImpl
 }
 
-func (pc *postcondition) Value(values ...interface{}) *logical {
+// Value is one or more values. If multiple it is either a list or
+// e.g. a range.
+func (pc *PostconditionImpl) Value(values ...interface{}) *LogicalImpl {
 
 	pc.value = values
+	pc.t = PostConditionValue
 
-	pc.child = &logical{ExpressionImpl: &ExpressionImpl{
+	pc.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
 		root:      pc.root,
 		condition: pc.condition,
 	}}
@@ -23,11 +39,13 @@ func (pc *postcondition) Value(values ...interface{}) *logical {
 
 }
 
-func (pc *postcondition) SK(name string) *logical {
+// SK expresses a secondary key
+func (pc *PostconditionImpl) SK(name string) *LogicalImpl {
 
-	pc.sk = name
+	pc.name = name
+	pc.t = PostConditionSK
 
-	pc.child = &logical{ExpressionImpl: &ExpressionImpl{
+	pc.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
 		root:      pc.root,
 		condition: pc.condition,
 	}}
@@ -36,11 +54,13 @@ func (pc *postcondition) SK(name string) *logical {
 
 }
 
-func (pc *postcondition) PK(name string) *logical {
+// PK is expressing a partition key
+func (pc *PostconditionImpl) PK(name string) *LogicalImpl {
 
-	pc.pk = name
+	pc.name = name
+	pc.t = PostConditionPK
 
-	pc.child = &logical{ExpressionImpl: &ExpressionImpl{
+	pc.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
 		root:      pc.root,
 		condition: pc.condition,
 	}}
@@ -49,11 +69,13 @@ func (pc *postcondition) PK(name string) *logical {
 
 }
 
-func (pc *postcondition) Att(name string) *logical {
+// Att expresses an attribute / property name
+func (pc *PostconditionImpl) Att(name string) *LogicalImpl {
 
-	pc.att = name
+	pc.name = name
+	pc.t = PostConditionAttribute
 
-	pc.child = &logical{ExpressionImpl: &ExpressionImpl{
+	pc.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
 		root:      pc.root,
 		condition: pc.condition,
 	}}
