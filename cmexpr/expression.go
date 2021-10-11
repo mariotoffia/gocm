@@ -55,20 +55,35 @@ func (e *ExpressionImpl) Build() {
 
 	if e.condition != nil {
 
-		qualifier := e.condition
-
-		expr := &ConditionExpr{
-			LeftType:   qualifier.t,
-			LeftName:   qualifier.name,
-			Condition:  qualifier.child.oper,
-			RightName:  qualifier.child.child.name,
-			RightType:  qualifier.child.child.t,
-			RightValue: qualifier.child.child.value,
-		}
-
-		data, _ := json.Marshal(expr)
-		fmt.Println(string(data))
+		ProcessQualifier(e.condition)
 
 		// Build until x.child.expression == e (i.e. skip this e since it is a "dead" child
 	}
+}
+
+// ProcessQualifier will process a single qualifier and any
+// and, or, not expressions.
+func ProcessQualifier(qualifier *QualifierImpl) {
+
+	cond := qualifier.child
+	postCond := qualifier.child.child
+
+	expr := &ConditionExpr{
+		LeftType:   qualifier.t,
+		LeftName:   qualifier.name,
+		Condition:  cond.oper,
+		RightName:  postCond.name,
+		RightType:  postCond.t,
+		RightValue: postCond.value,
+	}
+
+	data, _ := json.Marshal(expr)
+	fmt.Println(string(data))
+
+	ProcessLogicalOper(postCond.child)
+}
+
+// ProcessLogicalOper will process and, or and not
+func ProcessLogicalOper(logic *LogicalImpl) {
+
 }
