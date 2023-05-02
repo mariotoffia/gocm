@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "antlr",
         "Childs",
         "cment",
         "cmexpr",
@@ -10,9 +11,13 @@
         "datasources",
         "enity",
         "gocm",
+        "GREATERTHAN",
         "idexpr",
         "idreflect",
+        "LESSTHAN",
+        "lval",
         "mariotoffia",
+        "NOTEQUAL",
         "Oper",
         "pelle",
         "pkexpr",
@@ -22,6 +27,7 @@
         "skexpr",
         "sklen",
         "stretchr",
+        "struct",
         "sune",
         "vval"
     ]
