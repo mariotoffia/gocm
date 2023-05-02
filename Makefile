@@ -1,7 +1,5 @@
 generate:
-	@docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v `pwd`/cmselect:/work antlr/antlr4 -Dlanguage=Go cmselect.g4
-
-clean:
+	@docker run --rm -u $(id -u ${USER}):$(id -g ${USER}) -v `pwd`/cmselect:/work antlr/antlr4 -Dlanguage=Go cmselect.g4 -package cmselect
 	@cd cmselect;find . ! -name '*.go' ! -name '*.g4' -type f -exec rm {} +;cd -
 dep:
 	@echo "Removing old antlr4 docker image"

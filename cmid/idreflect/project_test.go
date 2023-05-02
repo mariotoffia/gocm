@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSimplePKSKFieldProjection(t *testing.T) {
+func TestSimplePKFieldProjection(t *testing.T) {
 
 	type Car struct {
 		Brand string `cm:"pk, pk=P#{pk}"`
@@ -35,6 +35,37 @@ func TestSimplePKSKFieldProjection(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "1.0.0/SAAB/2001/9-5", id.PartitionKey())
 	assert.Equal(t, "", id.SecondaryKey())
+}
+
+func TestSimplePKSKFieldProjection(t *testing.T) {
+
+	type Car struct {
+		Brand string `cm:"pk, pk=P#{pk}"`
+		SK    string `cm:"sk, sk=S#{year}#{model}"`
+		Model string `cm:"model"`
+		Year  int    `cm:"year"`
+	}
+
+	p := NewProjectRepository().UseDivider("/")
+
+	var test Car
+	m := p.AddProjection(&test, &cmid.ID{
+		PK: "1.0.0/{pk}",
+		SK: "{year}/{model}",
+	})
+
+	assert.Equal(t, nil, p.Error())
+
+	car := Car{
+		Brand: "SAAB",
+		Model: "9-5",
+		Year:  2001,
+	}
+
+	id, err := m.Projection(&test).Project(&car)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, "1.0.0/SAAB", id.PartitionKey())
+	assert.Equal(t, "2001/9-5", id.SecondaryKey())
 }
 
 func TestUnresolvedEntityWillFailIfPKPropertyIsIncorrect(t *testing.T) {

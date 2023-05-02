@@ -1,7 +1,6 @@
 // Code generated from cmselect.g4 by ANTLR 4.12.0. DO NOT EDIT.
 
-package parser // cmselect
-
+package cmselect // cmselect
 import "github.com/antlr/antlr4/runtime/Go/antlr/v4"
 
 // cmselectListener is a complete listener for a parse tree produced by cmselectParser.

@@ -1,7 +1,6 @@
 // Code generated from cmselect.g4 by ANTLR 4.12.0. DO NOT EDIT.
 
-package parser // cmselect
-
+package cmselect // cmselect
 import (
 	"fmt"
 	"strconv"

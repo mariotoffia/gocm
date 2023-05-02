@@ -2,6 +2,8 @@ package idexpr
 
 import "fmt"
 
+const InvalidExpressionSyntaxErrorMsg = "invalid syntax, expression: %s"
+
 // ExpressionParserCallback is invoked when parsing the expression.
 type ExpressionParserCallback interface {
 	// Divider is called when a _divider_ is encountered.
@@ -61,11 +63,11 @@ func Parse(divider, expr string, cb ExpressionParserCallback) error {
 		return nil
 	}
 
-	divskip := false
+	divSkip := false
 	open := -1
 	component := -1
 	index := 0
-	optcnt := 0
+	optCnt := 0
 	div := rune(divider[0])
 
 	var i int
@@ -75,19 +77,19 @@ func Parse(divider, expr string, cb ExpressionParserCallback) error {
 
 		if c == '?' {
 
-			optcnt++
+			optCnt++
 
 			if open == -1 {
-				return fmt.Errorf("invalid syntax, expression: %s", expr)
+				return fmt.Errorf(InvalidExpressionSyntaxErrorMsg, expr)
 			}
 
-			divskip = true
+			divSkip = true
 		}
 
 		if c == div {
 
 			if open != -1 {
-				return fmt.Errorf("invalid syntax, expression: %s", expr)
+				return fmt.Errorf(InvalidExpressionSyntaxErrorMsg, expr)
 			}
 
 			if component != -1 {
@@ -106,7 +108,7 @@ func Parse(divider, expr string, cb ExpressionParserCallback) error {
 		if c == '{' {
 
 			if open != -1 {
-				return fmt.Errorf("invalid syntax, expression: %s", expr)
+				return fmt.Errorf(InvalidExpressionSyntaxErrorMsg, expr)
 			}
 
 			open = i
@@ -116,17 +118,17 @@ func Parse(divider, expr string, cb ExpressionParserCallback) error {
 		if c == '}' {
 
 			if open == -1 {
-				return fmt.Errorf("invalid syntax, expression: %s", expr)
+				return fmt.Errorf(InvalidExpressionSyntaxErrorMsg, expr)
 			}
 
-			if divskip {
-				cb.ID(index, divskip, expr[open+2:i])
+			if divSkip {
+				cb.ID(index, divSkip, expr[open+2:i])
 			} else {
-				cb.ID(index, divskip, expr[open+1:i])
+				cb.ID(index, divSkip, expr[open+1:i])
 			}
 
 			index++
-			divskip = false
+			divSkip = false
 			open = -1
 			continue
 		}
@@ -137,7 +139,7 @@ func Parse(divider, expr string, cb ExpressionParserCallback) error {
 	}
 
 	if open != -1 {
-		return fmt.Errorf("invalid syntax, expression: %s", expr)
+		return fmt.Errorf(InvalidExpressionSyntaxErrorMsg, expr)
 	}
 
 	if component != -1 {
@@ -146,7 +148,7 @@ func Parse(divider, expr string, cb ExpressionParserCallback) error {
 		component = -1
 	}
 
-	if optcnt > 1 {
+	if optCnt > 1 {
 		return fmt.Errorf("invalid syntax, expression: %s, only one optional is allowed", expr)
 	}
 

@@ -14,8 +14,8 @@ const (
 	PostConditionValue PostConditionType = "value"
 )
 
-// PostconditionImpl is the right hand of the condition.
-type PostconditionImpl struct {
+// PostConditionImpl is the right hand of the condition.
+type PostConditionImpl struct {
 	*ExpressionImpl
 	name  string
 	t     PostConditionType
@@ -25,7 +25,7 @@ type PostconditionImpl struct {
 
 // Value is one or more values. If multiple it is either a list or
 // e.g. a range.
-func (pc *PostconditionImpl) Value(values ...interface{}) *LogicalImpl {
+func (pc *PostConditionImpl) Value(values ...interface{}) *LogicalImpl {
 
 	pc.value = values
 	pc.t = PostConditionValue
@@ -40,7 +40,7 @@ func (pc *PostconditionImpl) Value(values ...interface{}) *LogicalImpl {
 }
 
 // SK expresses a secondary key
-func (pc *PostconditionImpl) SK(name string) *LogicalImpl {
+func (pc *PostConditionImpl) SK(name string) *LogicalImpl {
 
 	pc.name = name
 	pc.t = PostConditionSK
@@ -55,7 +55,7 @@ func (pc *PostconditionImpl) SK(name string) *LogicalImpl {
 }
 
 // PK is expressing a partition key
-func (pc *PostconditionImpl) PK(name string) *LogicalImpl {
+func (pc *PostConditionImpl) PK(name string) *LogicalImpl {
 
 	pc.name = name
 	pc.t = PostConditionPK
@@ -70,7 +70,7 @@ func (pc *PostconditionImpl) PK(name string) *LogicalImpl {
 }
 
 // Att expresses an attribute / property name
-func (pc *PostconditionImpl) Att(name string) *LogicalImpl {
+func (pc *PostConditionImpl) Att(name string) *LogicalImpl {
 
 	pc.name = name
 	pc.t = PostConditionAttribute
