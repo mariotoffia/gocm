@@ -95,7 +95,7 @@ func (pr *ProjectRepositoryImpl) UseTag(tag string) *ProjectRepositoryImpl {
 // AddProjection will add a projection using the cm attributes but uses the provided
 // _PK_ and _SK_ instead.
 func (pr *ProjectRepositoryImpl) AddProjection(
-	v interface{},
+	v any,
 	expr cmid.Identity) cmid.IDProjectRepository {
 
 	if pr.frozen {
@@ -142,7 +142,7 @@ func (pr *ProjectRepositoryImpl) AddProjection(
 }
 
 // Projection gets the projector for the parameter _v_ (as it was registered using `AddProjection()`).
-func (pr *ProjectRepositoryImpl) Projection(v interface{}) cmid.IDProjector {
+func (pr *ProjectRepositoryImpl) Projection(v any) cmid.IDProjector {
 
 	if m, ok := pr.mappers[reflect.TypeOf(v)]; ok {
 		return m
@@ -156,7 +156,7 @@ func (pr *ProjectRepositoryImpl) Projection(v interface{}) cmid.IDProjector {
 //
 // The returned `Identity` may be used by any implementation to use as _PK_ and _SK_ instead
 // of the default `IDMapper` / `IDObjectMapper`.
-func (p *Projector) Project(v interface{}) (cmid.Identity, error) {
+func (p *Projector) Project(v any) (cmid.Identity, error) {
 	return p.assembleIdentity(reflect.ValueOf(v).Elem())
 }
 

@@ -19,13 +19,13 @@ type PostConditionImpl struct {
 	*ExpressionImpl
 	name  string
 	t     PostConditionType
-	value []interface{}
+	value []any
 	child *LogicalImpl
 }
 
 // Value is one or more values. If multiple it is either a list or
 // e.g. a range.
-func (pc *PostConditionImpl) Value(values ...interface{}) *LogicalImpl {
+func (pc *PostConditionImpl) Value(values ...any) *LogicalImpl {
 
 	pc.value = values
 	pc.t = PostConditionValue

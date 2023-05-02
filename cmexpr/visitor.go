@@ -4,13 +4,13 @@ import "context"
 
 // ContextTag is used to be embedded into value context.
 type ContextTag struct {
-	key, val interface{}
+	key, val any
 }
 
 // ExprContext is getting passed for each visitor. This may be
 // used to store contextual information.
 type ExprContext struct {
-	Context map[string]interface{}
+	Context map[string]any
 }
 
 // ConditionExpr is a complete binary / unary condition expression.
@@ -20,7 +20,7 @@ type ConditionExpr struct {
 	RightName  string
 	LeftType   QualifierType
 	RightType  PostConditionType
-	RightValue []interface{}
+	RightValue []any
 }
 
 // ConditionExpressionVisitor will get invoked while parsing the
@@ -64,7 +64,7 @@ type ConditionExpressionVisitorEx interface {
 	SecondaryKey(ctx context.Context, name string)
 	Attribute(ctx context.Context, name string)
 	Condition(ctx context.Context, oper ConditionOperation)
-	Value(ctx context.Context, value ...interface{})
+	Value(ctx context.Context, value ...any)
 	// Begin And is invoked when a `And` operation is encountered.
 	//
 	// The returned _ContextTag_ is used to create a new context using `context.WithValue(ctx, key, value)`.

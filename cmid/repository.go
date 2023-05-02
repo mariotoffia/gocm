@@ -15,12 +15,12 @@ type IDMapperRepository interface {
 	// Some implementations has default implementations and thus do not need to do `Add()`.
 	//
 	// If none is registered for type _v_, `nil` is returned.
-	Mapper(v interface{}) IDObjectMapper
+	Mapper(v any) IDObjectMapper
 	// Add creates a new `IdMapper` and stores it in its internal hash.
 	//
 	// The parameter _v_ is expected to be a pointer to a type. If the repository is `IsFrozen()`
 	// it will silently ignore the `Add()` request.
-	Add(v interface{}) IDMapperRepository
+	Add(v any) IDMapperRepository
 	// Mappers returns an array of currently supported mappings.
 	Mappers() []IDObjectMapper
 	// Freeze will make registration of new mappings impossible.

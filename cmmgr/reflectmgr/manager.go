@@ -30,7 +30,7 @@ func NewReflectiveEntityManager() *ReflectiveEntityManagerImpl {
 }
 
 // Register will register the entity _v_ for mapping, factory purposes.
-func (rm *ReflectiveEntityManagerImpl) Register(v interface{}) *ReflectiveEntityManagerImpl {
+func (rm *ReflectiveEntityManagerImpl) Register(v any) *ReflectiveEntityManagerImpl {
 
 	factory := rm.Mappers().Add(v).Mapper(v).(cment.EntityFactory)
 
@@ -45,7 +45,7 @@ func (rm *ReflectiveEntityManagerImpl) Register(v interface{}) *ReflectiveEntity
 // If a _v_ type is registered twice, the last one is the one that will be used. If you
 // wish to have different expressions on same type, you need to create more than one
 // `IDProjectRepository`.
-func (rm *ReflectiveEntityManagerImpl) AddProjection(v interface{}, expr cmid.Identity) *ReflectiveEntityManagerImpl {
+func (rm *ReflectiveEntityManagerImpl) AddProjection(v any, expr cmid.Identity) *ReflectiveEntityManagerImpl {
 
 	rm.Projections().AddProjection(v, expr)
 	return rm

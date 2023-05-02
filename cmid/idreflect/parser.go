@@ -39,7 +39,7 @@ func (p *MapperParser) Freeze() cmid.IDMapperRepository {
 	return p
 }
 
-// IsFrozen returns `true` if the instance do not accept any more mapping regisrations using `Add()`.
+// IsFrozen returns `true` if the instance do not accept any more mapping registrations using `Add()`.
 func (p *MapperParser) IsFrozen() bool {
 	return p.frozen
 }
@@ -49,7 +49,7 @@ func (p *MapperParser) Mappers() []cmid.IDObjectMapper {
 	return p.cache
 }
 
-// UseDivider changes the standard divider `cmid.IDStandarDivider` to _divider_.
+// UseDivider changes the standard divider `cmid.IDStandardDivider` to _divider_.
 //
 // The already `Add()`ed `IDObjectMapper`s are using the previous and all new will
 // use the newly set _divider_. Hence, it is possible to have different dividers in
@@ -86,7 +86,7 @@ func (p *MapperParser) ClearError() cmid.IDMapperRepository {
 }
 
 // Mapper gets the mapper for the parameter _v_ (as it was registered using `Add()`).
-func (p *MapperParser) Mapper(v interface{}) cmid.IDObjectMapper {
+func (p *MapperParser) Mapper(v any) cmid.IDObjectMapper {
 
 	if m, ok := p.mappers[reflect.TypeOf(v)]; ok {
 		return m
@@ -98,7 +98,7 @@ func (p *MapperParser) Mapper(v interface{}) cmid.IDObjectMapper {
 // Add creates a new reflection based `IdMapper` and stores it in its internal hash.
 //
 // The parameter _v_ is expected to be a pointer to a type.
-func (p *MapperParser) Add(v interface{}) cmid.IDMapperRepository {
+func (p *MapperParser) Add(v any) cmid.IDMapperRepository {
 
 	if p.frozen {
 		return p
@@ -167,7 +167,7 @@ func (p *MapperParser) stripToComponents(id *cmid.ID) *cmid.ID {
 				if cid.PK == "" {
 					cid.PK = component
 				} else {
-					cid.PK += "#" + component
+					cid.PK += p.divider + component
 				}
 				return
 			}
@@ -175,7 +175,7 @@ func (p *MapperParser) stripToComponents(id *cmid.ID) *cmid.ID {
 			if cid.SK == "" {
 				cid.SK = component
 			} else {
-				cid.SK += "#" + component
+				cid.SK += p.divider + component
 			}
 		},
 		DivFunc: func(index int) {},

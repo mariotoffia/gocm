@@ -81,7 +81,7 @@ func (ef *EntityFactoriesImpl) Register(f ...EntityFactory) EntityFactoryReposit
 // If the entity could not be created, `nil` is returned. Since this is an aggregated
 // `EntityFactory` it will search for the last registered factory that do support this
 // `cmid.ComponentIdentity`.
-func (ef *EntityFactoriesImpl) Create(id cmid.ComponentIdentity) interface{} {
+func (ef *EntityFactoriesImpl) Create(id cmid.ComponentIdentity) any {
 
 	component := renderComponents(id)
 

@@ -16,9 +16,9 @@ type IDProjectRepository interface {
 	// If a _v_ type is registered twice, the last one is the one that will be used. If you
 	// wish to have different expressions on same type, you need to create more than one
 	// `IDProjectRepository`.
-	AddProjection(v interface{}, expr Identity) IDProjectRepository
+	AddProjection(v any, expr Identity) IDProjectRepository
 	// Projection returns a `IDProjector` for the _v_ parameter if earlier registered.
-	Projection(v interface{}) IDProjector
+	Projection(v any) IDProjector
 	// Freeze will make registration of new projections impossible.
 	Freeze() IDProjectRepository
 	// IsFrozen returns `true` if the instance do not accept any more mapping regisrations using `AddProjection()`.
@@ -42,5 +42,5 @@ type IDProjector interface {
 	//
 	// The _v_ entity passed must be in it's resolved statet to be guaranteed to succeed, otherwise
 	// it may not contain correct information to do the projection.
-	Project(v interface{}) (Identity, error)
+	Project(v any) (Identity, error)
 }

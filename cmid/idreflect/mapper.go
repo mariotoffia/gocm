@@ -28,7 +28,7 @@ type MapperImpl struct {
 //
 // If the entity could not be created, `nil` is returned. This is realizing
 // `cment.EntityFactory` interface.
-func (rm *MapperImpl) Create(id cmid.ComponentIdentity) interface{} {
+func (rm *MapperImpl) Create(id cmid.ComponentIdentity) any {
 
 	if rm.id[0].PartitionKey() != id.PartitionKey() ||
 		rm.id[0].SecondaryKey() != id.SecondaryKey() {
@@ -51,7 +51,7 @@ func (rm *MapperImpl) Identities() []cmid.ComponentIdentity {
 //
 // This function is never idempotent since it will change the PK or SK. The other fields
 // is overwritten. But the PK and SK is always changed (if not static value).
-func (rm *MapperImpl) Resolve(v interface{}) error {
+func (rm *MapperImpl) Resolve(v any) error {
 
 	vval := reflect.ValueOf(v).Elem()
 	id, err := rm.extractIdentity(vval)
@@ -170,7 +170,7 @@ func reflectSetValue(sn *parser.StructNode, vval reflect.Value, val string) erro
 //
 // This function may not be idempotent, use a fresh new instance each time
 // invoking this function.
-func (rm *MapperImpl) Map(v interface{}) error {
+func (rm *MapperImpl) Map(v any) error {
 
 	vval := reflect.ValueOf(v).Elem()
 	id, err := rm.assembleIdentity(vval)
@@ -191,12 +191,12 @@ func (rm *MapperImpl) Map(v interface{}) error {
 }
 
 // ExtractIdentity will extract the PK and SK from the _v_ parameter.
-func (rm *MapperImpl) ExtractIdentity(v interface{}) (cmid.Identity, error) {
+func (rm *MapperImpl) ExtractIdentity(v any) (cmid.Identity, error) {
 	return rm.extractIdentity(reflect.ValueOf(v).Elem())
 }
 
 // AssembleIdentity will create a new identity from the _v_ instance data.
-func (rm *MapperImpl) AssembleIdentity(v interface{}) (cmid.Identity, error) {
+func (rm *MapperImpl) AssembleIdentity(v any) (cmid.Identity, error) {
 	return rm.assembleIdentity(reflect.ValueOf(v).Elem())
 }
 

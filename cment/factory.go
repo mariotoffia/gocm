@@ -11,7 +11,7 @@ type EntityFactory interface {
 	// of entity to be created if the `EntityFactory` supports it.
 	//
 	// If the entity could not be created, `nil` is returned.
-	Create(id cmid.ComponentIdentity) interface{}
+	Create(id cmid.ComponentIdentity) any
 	// Identities is an array of all types that the factory may
 	// be able to create.
 	Identities() []cmid.ComponentIdentity
@@ -24,14 +24,14 @@ type EntityFactoryImpl struct {
 	// be able to create.
 	ID []cmid.ComponentIdentity
 	// createEntity is a function exposed as `EntityFactory.Create()`
-	createEntity func(id cmid.ComponentIdentity) interface{}
+	createEntity func(id cmid.ComponentIdentity) any
 }
 
 // Create uses the _id_ parameter to determine the type
 // of entity to be created if the `EntityFactory` supports it.
 //
 // If the entity could not be created, `nil` is returned.
-func (efi *EntityFactoryImpl) Create(id cmid.ComponentIdentity) interface{} {
+func (efi *EntityFactoryImpl) Create(id cmid.ComponentIdentity) any {
 	return efi.createEntity(id)
 }
 
@@ -43,7 +43,7 @@ func (efi *EntityFactoryImpl) Identities() []cmid.ComponentIdentity {
 
 // NewFactory creates a entity factory for a one or more scalar or composite id. Since one entity factory
 // may handle multiple entities it uses a vardict id.
-func NewFactory(create func(id cmid.ComponentIdentity) interface{}, id ...cmid.ComponentIdentity) *EntityFactoryImpl {
+func NewFactory(create func(id cmid.ComponentIdentity) any, id ...cmid.ComponentIdentity) *EntityFactoryImpl {
 
 	return &EntityFactoryImpl{
 		ID:           id,
