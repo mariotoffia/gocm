@@ -44,6 +44,12 @@ func (s *BasecmselectListener) EnterAttribute(ctx *AttributeContext) {}
 // ExitAttribute is called when production attribute is exited.
 func (s *BasecmselectListener) ExitAttribute(ctx *AttributeContext) {}
 
+// EnterRhAttribute is called when production rhAttribute is entered.
+func (s *BasecmselectListener) EnterRhAttribute(ctx *RhAttributeContext) {}
+
+// ExitRhAttribute is called when production rhAttribute is exited.
+func (s *BasecmselectListener) ExitRhAttribute(ctx *RhAttributeContext) {}
+
 // EnterFromClause is called when production fromClause is entered.
 func (s *BasecmselectListener) EnterFromClause(ctx *FromClauseContext) {}
 
@@ -67,6 +73,12 @@ func (s *BasecmselectListener) EnterCondition(ctx *ConditionContext) {}
 
 // ExitCondition is called when production condition is exited.
 func (s *BasecmselectListener) ExitCondition(ctx *ConditionContext) {}
+
+// EnterRightHandExpression is called when production rightHandExpression is entered.
+func (s *BasecmselectListener) EnterRightHandExpression(ctx *RightHandExpressionContext) {}
+
+// ExitRightHandExpression is called when production rightHandExpression is exited.
+func (s *BasecmselectListener) ExitRightHandExpression(ctx *RightHandExpressionContext) {}
 
 // EnterParameter is called when production parameter is entered.
 func (s *BasecmselectListener) EnterParameter(ctx *ParameterContext) {}

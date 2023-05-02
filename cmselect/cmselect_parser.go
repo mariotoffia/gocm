@@ -33,47 +33,50 @@ var cmselectParserStaticData struct {
 func cmselectParserInit() {
   staticData := &cmselectParserStaticData
   staticData.literalNames = []string{
-    "", "'*'", "','", "':'", "'=='", "'<>'", "'<'", "'>'", "'!='", "'AND'", 
-    "'OR'", "'NOT'", "'SELECT'", "'FROM'", "'WHERE'",
+    "", "','", "'*'", "':'", "'=='", "'!='", "'<'", "'>'", "'AND'", "'OR'", 
+    "'NOT'", "'AS'", "'SELECT'", "'FROM'", "'WHERE'",
   }
   staticData.symbolicNames = []string{
-    "", "", "", "", "EQUAL", "NOT_EQUAL", "LESS_THAN", "GREATER_THAN", "NOT_EQUAL_ALT", 
-    "AND", "OR", "NOT", "SELECT", "FROM", "WHERE", "NUMBER", "STRING", "IDENTIFIER", 
+    "", "", "", "", "EQUAL", "NOT_EQUAL", "LESS_THAN", "GREATER_THAN", "AND", 
+    "OR", "NOT", "AS", "SELECT", "FROM", "WHERE", "NUMBER", "STRING", "IDENTIFIER", 
     "WS",
   }
   staticData.ruleNames = []string{
-    "query", "selectClause", "attributeList", "attribute", "fromClause", 
-    "tableName", "whereClause", "condition", "parameter", "logicalOperator",
+    "query", "selectClause", "attributeList", "attribute", "rhAttribute", 
+    "fromClause", "tableName", "whereClause", "condition", "rightHandExpression", 
+    "parameter", "logicalOperator",
   }
   staticData.predictionContextCache = antlr.NewPredictionContextCache()
   staticData.serializedATN = []int32{
-	4, 1, 18, 72, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 
-	4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 1, 0, 1, 
-	0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 3, 2, 30, 8, 2, 1, 2, 1, 2, 
-	1, 2, 3, 2, 35, 8, 2, 5, 2, 37, 8, 2, 10, 2, 12, 2, 40, 9, 2, 1, 3, 1, 
-	3, 1, 4, 1, 4, 1, 4, 1, 5, 1, 5, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 5, 6, 54, 
-	8, 6, 10, 6, 12, 6, 57, 9, 6, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 3, 7, 64, 8, 
-	7, 1, 8, 1, 8, 1, 8, 1, 8, 1, 9, 1, 9, 1, 9, 0, 0, 10, 0, 2, 4, 6, 8, 10, 
-	12, 14, 16, 18, 0, 2, 1, 0, 4, 8, 1, 0, 9, 11, 67, 0, 20, 1, 0, 0, 0, 2, 
-	24, 1, 0, 0, 0, 4, 29, 1, 0, 0, 0, 6, 41, 1, 0, 0, 0, 8, 43, 1, 0, 0, 0, 
-	10, 46, 1, 0, 0, 0, 12, 48, 1, 0, 0, 0, 14, 58, 1, 0, 0, 0, 16, 65, 1, 
-	0, 0, 0, 18, 69, 1, 0, 0, 0, 20, 21, 3, 2, 1, 0, 21, 22, 3, 8, 4, 0, 22, 
-	23, 3, 12, 6, 0, 23, 1, 1, 0, 0, 0, 24, 25, 5, 12, 0, 0, 25, 26, 3, 4, 
-	2, 0, 26, 3, 1, 0, 0, 0, 27, 30, 3, 6, 3, 0, 28, 30, 5, 1, 0, 0, 29, 27, 
-	1, 0, 0, 0, 29, 28, 1, 0, 0, 0, 30, 38, 1, 0, 0, 0, 31, 34, 5, 2, 0, 0, 
-	32, 35, 3, 6, 3, 0, 33, 35, 5, 1, 0, 0, 34, 32, 1, 0, 0, 0, 34, 33, 1, 
-	0, 0, 0, 35, 37, 1, 0, 0, 0, 36, 31, 1, 0, 0, 0, 37, 40, 1, 0, 0, 0, 38, 
-	36, 1, 0, 0, 0, 38, 39, 1, 0, 0, 0, 39, 5, 1, 0, 0, 0, 40, 38, 1, 0, 0, 
-	0, 41, 42, 5, 17, 0, 0, 42, 7, 1, 0, 0, 0, 43, 44, 5, 13, 0, 0, 44, 45, 
-	3, 10, 5, 0, 45, 9, 1, 0, 0, 0, 46, 47, 5, 17, 0, 0, 47, 11, 1, 0, 0, 0, 
-	48, 49, 5, 14, 0, 0, 49, 55, 3, 14, 7, 0, 50, 51, 3, 18, 9, 0, 51, 52, 
-	3, 14, 7, 0, 52, 54, 1, 0, 0, 0, 53, 50, 1, 0, 0, 0, 54, 57, 1, 0, 0, 0, 
-	55, 53, 1, 0, 0, 0, 55, 56, 1, 0, 0, 0, 56, 13, 1, 0, 0, 0, 57, 55, 1, 
-	0, 0, 0, 58, 59, 3, 6, 3, 0, 59, 63, 7, 0, 0, 0, 60, 64, 5, 15, 0, 0, 61, 
-	64, 5, 16, 0, 0, 62, 64, 3, 16, 8, 0, 63, 60, 1, 0, 0, 0, 63, 61, 1, 0, 
-	0, 0, 63, 62, 1, 0, 0, 0, 64, 15, 1, 0, 0, 0, 65, 66, 5, 3, 0, 0, 66, 67, 
-	5, 17, 0, 0, 67, 68, 5, 3, 0, 0, 68, 17, 1, 0, 0, 0, 69, 70, 7, 1, 0, 0, 
-	70, 19, 1, 0, 0, 0, 5, 29, 34, 38, 55, 63,
+	4, 1, 18, 78, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 
+	4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7, 
+	10, 2, 11, 7, 11, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 
+	1, 2, 5, 2, 35, 8, 2, 10, 2, 12, 2, 38, 9, 2, 1, 3, 1, 3, 1, 3, 3, 3, 43, 
+	8, 3, 1, 4, 1, 4, 1, 5, 1, 5, 1, 5, 1, 6, 1, 6, 1, 7, 1, 7, 1, 7, 1, 7, 
+	1, 7, 5, 7, 57, 8, 7, 10, 7, 12, 7, 60, 9, 7, 1, 8, 1, 8, 1, 8, 1, 8, 1, 
+	9, 1, 9, 1, 9, 1, 9, 3, 9, 70, 8, 9, 1, 10, 1, 10, 1, 10, 1, 10, 1, 11, 
+	1, 11, 1, 11, 0, 0, 12, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 0, 3, 
+	2, 0, 2, 2, 17, 17, 1, 0, 4, 7, 1, 0, 8, 10, 71, 0, 24, 1, 0, 0, 0, 2, 
+	28, 1, 0, 0, 0, 4, 31, 1, 0, 0, 0, 6, 39, 1, 0, 0, 0, 8, 44, 1, 0, 0, 0, 
+	10, 46, 1, 0, 0, 0, 12, 49, 1, 0, 0, 0, 14, 51, 1, 0, 0, 0, 16, 61, 1, 
+	0, 0, 0, 18, 69, 1, 0, 0, 0, 20, 71, 1, 0, 0, 0, 22, 75, 1, 0, 0, 0, 24, 
+	25, 3, 2, 1, 0, 25, 26, 3, 10, 5, 0, 26, 27, 3, 14, 7, 0, 27, 1, 1, 0, 
+	0, 0, 28, 29, 5, 12, 0, 0, 29, 30, 3, 4, 2, 0, 30, 3, 1, 0, 0, 0, 31, 36, 
+	3, 6, 3, 0, 32, 33, 5, 1, 0, 0, 33, 35, 3, 6, 3, 0, 34, 32, 1, 0, 0, 0, 
+	35, 38, 1, 0, 0, 0, 36, 34, 1, 0, 0, 0, 36, 37, 1, 0, 0, 0, 37, 5, 1, 0, 
+	0, 0, 38, 36, 1, 0, 0, 0, 39, 42, 7, 0, 0, 0, 40, 41, 5, 11, 0, 0, 41, 
+	43, 5, 17, 0, 0, 42, 40, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0, 43, 7, 1, 0, 0, 
+	0, 44, 45, 5, 17, 0, 0, 45, 9, 1, 0, 0, 0, 46, 47, 5, 13, 0, 0, 47, 48, 
+	3, 12, 6, 0, 48, 11, 1, 0, 0, 0, 49, 50, 5, 17, 0, 0, 50, 13, 1, 0, 0, 
+	0, 51, 52, 5, 14, 0, 0, 52, 58, 3, 16, 8, 0, 53, 54, 3, 22, 11, 0, 54, 
+	55, 3, 16, 8, 0, 55, 57, 1, 0, 0, 0, 56, 53, 1, 0, 0, 0, 57, 60, 1, 0, 
+	0, 0, 58, 56, 1, 0, 0, 0, 58, 59, 1, 0, 0, 0, 59, 15, 1, 0, 0, 0, 60, 58, 
+	1, 0, 0, 0, 61, 62, 3, 6, 3, 0, 62, 63, 7, 1, 0, 0, 63, 64, 3, 18, 9, 0, 
+	64, 17, 1, 0, 0, 0, 65, 70, 5, 16, 0, 0, 66, 70, 5, 15, 0, 0, 67, 70, 3, 
+	20, 10, 0, 68, 70, 3, 8, 4, 0, 69, 65, 1, 0, 0, 0, 69, 66, 1, 0, 0, 0, 
+	69, 67, 1, 0, 0, 0, 69, 68, 1, 0, 0, 0, 70, 19, 1, 0, 0, 0, 71, 72, 5, 
+	3, 0, 0, 72, 73, 5, 17, 0, 0, 73, 74, 5, 3, 0, 0, 74, 21, 1, 0, 0, 0, 75, 
+	76, 7, 2, 0, 0, 76, 23, 1, 0, 0, 0, 4, 36, 42, 58, 69,
 }
   deserializer := antlr.NewATNDeserializer(nil)
   staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -120,10 +123,10 @@ const (
 	cmselectParserNOT_EQUAL = 5
 	cmselectParserLESS_THAN = 6
 	cmselectParserGREATER_THAN = 7
-	cmselectParserNOT_EQUAL_ALT = 8
-	cmselectParserAND = 9
-	cmselectParserOR = 10
-	cmselectParserNOT = 11
+	cmselectParserAND = 8
+	cmselectParserOR = 9
+	cmselectParserNOT = 10
+	cmselectParserAS = 11
 	cmselectParserSELECT = 12
 	cmselectParserFROM = 13
 	cmselectParserWHERE = 14
@@ -139,12 +142,14 @@ const (
 	cmselectParserRULE_selectClause = 1
 	cmselectParserRULE_attributeList = 2
 	cmselectParserRULE_attribute = 3
-	cmselectParserRULE_fromClause = 4
-	cmselectParserRULE_tableName = 5
-	cmselectParserRULE_whereClause = 6
-	cmselectParserRULE_condition = 7
-	cmselectParserRULE_parameter = 8
-	cmselectParserRULE_logicalOperator = 9
+	cmselectParserRULE_rhAttribute = 4
+	cmselectParserRULE_fromClause = 5
+	cmselectParserRULE_tableName = 6
+	cmselectParserRULE_whereClause = 7
+	cmselectParserRULE_condition = 8
+	cmselectParserRULE_rightHandExpression = 9
+	cmselectParserRULE_parameter = 10
+	cmselectParserRULE_logicalOperator = 11
 )
 
 // IQueryContext is an interface to support dynamic dispatch.
@@ -287,15 +292,15 @@ func (p *cmselectParser) Query() (localctx IQueryContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(20)
+		p.SetState(24)
 		p.SelectClause()
 	}
 	{
-		p.SetState(21)
+		p.SetState(25)
 		p.FromClause()
 	}
 	{
-		p.SetState(22)
+		p.SetState(26)
 		p.WhereClause()
 	}
 
@@ -416,11 +421,11 @@ func (p *cmselectParser) SelectClause() (localctx ISelectClauseContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(24)
+		p.SetState(28)
 		p.Match(cmselectParserSELECT)
 	}
 	{
-		p.SetState(25)
+		p.SetState(29)
 		p.AttributeList()
 	}
 
@@ -563,63 +568,27 @@ func (p *cmselectParser) AttributeList() (localctx IAttributeListContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(29)
-	p.GetErrorHandler().Sync(p)
-
-	switch p.GetTokenStream().LA(1) {
-	case cmselectParserIDENTIFIER:
-		{
-			p.SetState(27)
-			p.Attribute()
-		}
-
-
-	case cmselectParserT__0:
-		{
-			p.SetState(28)
-			p.Match(cmselectParserT__0)
-		}
-
-
-
-	default:
-		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+	{
+		p.SetState(31)
+		p.Attribute()
 	}
-	p.SetState(38)
+	p.SetState(36)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 
-	for _la == cmselectParserT__1 {
+	for _la == cmselectParserT__0 {
 		{
-			p.SetState(31)
-			p.Match(cmselectParserT__1)
+			p.SetState(32)
+			p.Match(cmselectParserT__0)
 		}
-		p.SetState(34)
-		p.GetErrorHandler().Sync(p)
-
-		switch p.GetTokenStream().LA(1) {
-		case cmselectParserIDENTIFIER:
-			{
-				p.SetState(32)
-				p.Attribute()
-			}
-
-
-		case cmselectParserT__0:
-			{
-				p.SetState(33)
-				p.Match(cmselectParserT__0)
-			}
-
-
-
-		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		{
+			p.SetState(33)
+			p.Attribute()
 		}
 
 
-		p.SetState(40)
+		p.SetState(38)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -638,7 +607,9 @@ type IAttributeContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	IDENTIFIER() antlr.TerminalNode
+	AllIDENTIFIER() []antlr.TerminalNode
+	IDENTIFIER(i int) antlr.TerminalNode
+	AS() antlr.TerminalNode
 
 	// IsAttributeContext differentiates from other interfaces.
 	IsAttributeContext()
@@ -671,8 +642,16 @@ func NewAttributeContext(parser antlr.Parser, parent antlr.ParserRuleContext, in
 
 func (s *AttributeContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *AttributeContext) IDENTIFIER() antlr.TerminalNode {
-	return s.GetToken(cmselectParserIDENTIFIER, 0)
+func (s *AttributeContext) AllIDENTIFIER() []antlr.TerminalNode {
+	return s.GetTokens(cmselectParserIDENTIFIER)
+}
+
+func (s *AttributeContext) IDENTIFIER(i int) antlr.TerminalNode {
+	return s.GetToken(cmselectParserIDENTIFIER, i)
+}
+
+func (s *AttributeContext) AS() antlr.TerminalNode {
+	return s.GetToken(cmselectParserAS, 0)
 }
 
 func (s *AttributeContext) GetRuleContext() antlr.RuleContext {
@@ -705,6 +684,8 @@ func (p *cmselectParser) Attribute() (localctx IAttributeContext) {
 
 	localctx = NewAttributeContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 6, cmselectParserRULE_attribute)
+	var _la int
+
 
 	defer func() {
 		p.ExitRule()
@@ -724,7 +705,134 @@ func (p *cmselectParser) Attribute() (localctx IAttributeContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(41)
+		p.SetState(39)
+		_la = p.GetTokenStream().LA(1)
+
+		if !(_la == cmselectParserT__1 || _la == cmselectParserIDENTIFIER) {
+			p.GetErrorHandler().RecoverInline(p)
+		} else {
+			p.GetErrorHandler().ReportMatch(p)
+			p.Consume()
+		}
+	}
+	p.SetState(42)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+
+	if _la == cmselectParserAS {
+		{
+			p.SetState(40)
+			p.Match(cmselectParserAS)
+		}
+		{
+			p.SetState(41)
+			p.Match(cmselectParserIDENTIFIER)
+		}
+
+	}
+
+
+
+	return localctx
+}
+
+
+// IRhAttributeContext is an interface to support dynamic dispatch.
+type IRhAttributeContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	IDENTIFIER() antlr.TerminalNode
+
+	// IsRhAttributeContext differentiates from other interfaces.
+	IsRhAttributeContext()
+}
+
+type RhAttributeContext struct {
+	*antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyRhAttributeContext() *RhAttributeContext {
+	var p = new(RhAttributeContext)
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	p.RuleIndex = cmselectParserRULE_rhAttribute
+	return p
+}
+
+func (*RhAttributeContext) IsRhAttributeContext() {}
+
+func NewRhAttributeContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *RhAttributeContext {
+	var p = new(RhAttributeContext)
+
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = cmselectParserRULE_rhAttribute
+
+	return p
+}
+
+func (s *RhAttributeContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *RhAttributeContext) IDENTIFIER() antlr.TerminalNode {
+	return s.GetToken(cmselectParserIDENTIFIER, 0)
+}
+
+func (s *RhAttributeContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *RhAttributeContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+
+func (s *RhAttributeContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(cmselectListener); ok {
+		listenerT.EnterRhAttribute(s)
+	}
+}
+
+func (s *RhAttributeContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(cmselectListener); ok {
+		listenerT.ExitRhAttribute(s)
+	}
+}
+
+
+
+
+func (p *cmselectParser) RhAttribute() (localctx IRhAttributeContext) {
+	this := p
+	_ = this
+
+	localctx = NewRhAttributeContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 8, cmselectParserRULE_rhAttribute)
+
+	defer func() {
+		p.ExitRule()
+	}()
+
+	defer func() {
+		if err := recover(); err != nil {
+			if v, ok := err.(antlr.RecognitionException); ok {
+				localctx.SetException(v)
+				p.GetErrorHandler().ReportError(p, v)
+				p.GetErrorHandler().Recover(p, v)
+			} else {
+				panic(err)
+			}
+		}
+	}()
+
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(44)
 		p.Match(cmselectParserIDENTIFIER)
 	}
 
@@ -825,7 +933,7 @@ func (p *cmselectParser) FromClause() (localctx IFromClauseContext) {
 	_ = this
 
 	localctx = NewFromClauseContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 8, cmselectParserRULE_fromClause)
+	p.EnterRule(localctx, 10, cmselectParserRULE_fromClause)
 
 	defer func() {
 		p.ExitRule()
@@ -845,11 +953,11 @@ func (p *cmselectParser) FromClause() (localctx IFromClauseContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(43)
+		p.SetState(46)
 		p.Match(cmselectParserFROM)
 	}
 	{
-		p.SetState(44)
+		p.SetState(47)
 		p.TableName()
 	}
 
@@ -933,7 +1041,7 @@ func (p *cmselectParser) TableName() (localctx ITableNameContext) {
 	_ = this
 
 	localctx = NewTableNameContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 10, cmselectParserRULE_tableName)
+	p.EnterRule(localctx, 12, cmselectParserRULE_tableName)
 
 	defer func() {
 		p.ExitRule()
@@ -953,7 +1061,7 @@ func (p *cmselectParser) TableName() (localctx ITableNameContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(46)
+		p.SetState(49)
 		p.Match(cmselectParserIDENTIFIER)
 	}
 
@@ -1123,7 +1231,7 @@ func (p *cmselectParser) WhereClause() (localctx IWhereClauseContext) {
 	_ = this
 
 	localctx = NewWhereClauseContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 12, cmselectParserRULE_whereClause)
+	p.EnterRule(localctx, 14, cmselectParserRULE_whereClause)
 	var _la int
 
 
@@ -1145,30 +1253,30 @@ func (p *cmselectParser) WhereClause() (localctx IWhereClauseContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(48)
+		p.SetState(51)
 		p.Match(cmselectParserWHERE)
 	}
 	{
-		p.SetState(49)
+		p.SetState(52)
 		p.Condition()
 	}
-	p.SetState(55)
+	p.SetState(58)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 
-	for ((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 3584) != 0) {
+	for ((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 1792) != 0) {
 		{
-			p.SetState(50)
+			p.SetState(53)
 			p.LogicalOperator()
 		}
 		{
-			p.SetState(51)
+			p.SetState(54)
 			p.Condition()
 		}
 
 
-		p.SetState(57)
+		p.SetState(60)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -1188,14 +1296,11 @@ type IConditionContext interface {
 
 	// Getter signatures
 	Attribute() IAttributeContext
+	RightHandExpression() IRightHandExpressionContext
 	EQUAL() antlr.TerminalNode
 	NOT_EQUAL() antlr.TerminalNode
 	LESS_THAN() antlr.TerminalNode
 	GREATER_THAN() antlr.TerminalNode
-	NOT_EQUAL_ALT() antlr.TerminalNode
-	NUMBER() antlr.TerminalNode
-	STRING() antlr.TerminalNode
-	Parameter() IParameterContext
 
 	// IsConditionContext differentiates from other interfaces.
 	IsConditionContext()
@@ -1244,6 +1349,22 @@ func (s *ConditionContext) Attribute() IAttributeContext {
 	return t.(IAttributeContext)
 }
 
+func (s *ConditionContext) RightHandExpression() IRightHandExpressionContext {
+	var t antlr.RuleContext;
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IRightHandExpressionContext); ok {
+			t = ctx.(antlr.RuleContext);
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IRightHandExpressionContext)
+}
+
 func (s *ConditionContext) EQUAL() antlr.TerminalNode {
 	return s.GetToken(cmselectParserEQUAL, 0)
 }
@@ -1258,34 +1379,6 @@ func (s *ConditionContext) LESS_THAN() antlr.TerminalNode {
 
 func (s *ConditionContext) GREATER_THAN() antlr.TerminalNode {
 	return s.GetToken(cmselectParserGREATER_THAN, 0)
-}
-
-func (s *ConditionContext) NOT_EQUAL_ALT() antlr.TerminalNode {
-	return s.GetToken(cmselectParserNOT_EQUAL_ALT, 0)
-}
-
-func (s *ConditionContext) NUMBER() antlr.TerminalNode {
-	return s.GetToken(cmselectParserNUMBER, 0)
-}
-
-func (s *ConditionContext) STRING() antlr.TerminalNode {
-	return s.GetToken(cmselectParserSTRING, 0)
-}
-
-func (s *ConditionContext) Parameter() IParameterContext {
-	var t antlr.RuleContext;
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IParameterContext); ok {
-			t = ctx.(antlr.RuleContext);
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IParameterContext)
 }
 
 func (s *ConditionContext) GetRuleContext() antlr.RuleContext {
@@ -1317,7 +1410,7 @@ func (p *cmselectParser) Condition() (localctx IConditionContext) {
 	_ = this
 
 	localctx = NewConditionContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 14, cmselectParserRULE_condition)
+	p.EnterRule(localctx, 16, cmselectParserRULE_condition)
 	var _la int
 
 
@@ -1339,42 +1432,195 @@ func (p *cmselectParser) Condition() (localctx IConditionContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(58)
+		p.SetState(61)
 		p.Attribute()
 	}
 	{
-		p.SetState(59)
+		p.SetState(62)
 		_la = p.GetTokenStream().LA(1)
 
-		if !(((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 496) != 0)) {
+		if !(((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 240) != 0)) {
 			p.GetErrorHandler().RecoverInline(p)
 		} else {
 			p.GetErrorHandler().ReportMatch(p)
 			p.Consume()
 		}
 	}
-	p.SetState(63)
+	{
+		p.SetState(63)
+		p.RightHandExpression()
+	}
+
+
+
+	return localctx
+}
+
+
+// IRightHandExpressionContext is an interface to support dynamic dispatch.
+type IRightHandExpressionContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	STRING() antlr.TerminalNode
+	NUMBER() antlr.TerminalNode
+	Parameter() IParameterContext
+	RhAttribute() IRhAttributeContext
+
+	// IsRightHandExpressionContext differentiates from other interfaces.
+	IsRightHandExpressionContext()
+}
+
+type RightHandExpressionContext struct {
+	*antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyRightHandExpressionContext() *RightHandExpressionContext {
+	var p = new(RightHandExpressionContext)
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	p.RuleIndex = cmselectParserRULE_rightHandExpression
+	return p
+}
+
+func (*RightHandExpressionContext) IsRightHandExpressionContext() {}
+
+func NewRightHandExpressionContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *RightHandExpressionContext {
+	var p = new(RightHandExpressionContext)
+
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = cmselectParserRULE_rightHandExpression
+
+	return p
+}
+
+func (s *RightHandExpressionContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *RightHandExpressionContext) STRING() antlr.TerminalNode {
+	return s.GetToken(cmselectParserSTRING, 0)
+}
+
+func (s *RightHandExpressionContext) NUMBER() antlr.TerminalNode {
+	return s.GetToken(cmselectParserNUMBER, 0)
+}
+
+func (s *RightHandExpressionContext) Parameter() IParameterContext {
+	var t antlr.RuleContext;
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IParameterContext); ok {
+			t = ctx.(antlr.RuleContext);
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IParameterContext)
+}
+
+func (s *RightHandExpressionContext) RhAttribute() IRhAttributeContext {
+	var t antlr.RuleContext;
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IRhAttributeContext); ok {
+			t = ctx.(antlr.RuleContext);
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IRhAttributeContext)
+}
+
+func (s *RightHandExpressionContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *RightHandExpressionContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+
+func (s *RightHandExpressionContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(cmselectListener); ok {
+		listenerT.EnterRightHandExpression(s)
+	}
+}
+
+func (s *RightHandExpressionContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(cmselectListener); ok {
+		listenerT.ExitRightHandExpression(s)
+	}
+}
+
+
+
+
+func (p *cmselectParser) RightHandExpression() (localctx IRightHandExpressionContext) {
+	this := p
+	_ = this
+
+	localctx = NewRightHandExpressionContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 18, cmselectParserRULE_rightHandExpression)
+
+	defer func() {
+		p.ExitRule()
+	}()
+
+	defer func() {
+		if err := recover(); err != nil {
+			if v, ok := err.(antlr.RecognitionException); ok {
+				localctx.SetException(v)
+				p.GetErrorHandler().ReportError(p, v)
+				p.GetErrorHandler().Recover(p, v)
+			} else {
+				panic(err)
+			}
+		}
+	}()
+
+	p.SetState(69)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
-	case cmselectParserNUMBER:
-		{
-			p.SetState(60)
-			p.Match(cmselectParserNUMBER)
-		}
-
-
 	case cmselectParserSTRING:
+		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(61)
+			p.SetState(65)
 			p.Match(cmselectParserSTRING)
 		}
 
 
-	case cmselectParserT__2:
+	case cmselectParserNUMBER:
+		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(62)
+			p.SetState(66)
+			p.Match(cmselectParserNUMBER)
+		}
+
+
+	case cmselectParserT__2:
+		p.EnterOuterAlt(localctx, 3)
+		{
+			p.SetState(67)
 			p.Parameter()
+		}
+
+
+	case cmselectParserIDENTIFIER:
+		p.EnterOuterAlt(localctx, 4)
+		{
+			p.SetState(68)
+			p.RhAttribute()
 		}
 
 
@@ -1382,7 +1628,6 @@ func (p *cmselectParser) Condition() (localctx IConditionContext) {
 	default:
 		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 	}
-
 
 
 	return localctx
@@ -1463,7 +1708,7 @@ func (p *cmselectParser) Parameter() (localctx IParameterContext) {
 	_ = this
 
 	localctx = NewParameterContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 16, cmselectParserRULE_parameter)
+	p.EnterRule(localctx, 20, cmselectParserRULE_parameter)
 
 	defer func() {
 		p.ExitRule()
@@ -1483,15 +1728,15 @@ func (p *cmselectParser) Parameter() (localctx IParameterContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(65)
+		p.SetState(71)
 		p.Match(cmselectParserT__2)
 	}
 	{
-		p.SetState(66)
+		p.SetState(72)
 		p.Match(cmselectParserIDENTIFIER)
 	}
 	{
-		p.SetState(67)
+		p.SetState(73)
 		p.Match(cmselectParserT__2)
 	}
 
@@ -1585,7 +1830,7 @@ func (p *cmselectParser) LogicalOperator() (localctx ILogicalOperatorContext) {
 	_ = this
 
 	localctx = NewLogicalOperatorContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 18, cmselectParserRULE_logicalOperator)
+	p.EnterRule(localctx, 22, cmselectParserRULE_logicalOperator)
 	var _la int
 
 
@@ -1607,10 +1852,10 @@ func (p *cmselectParser) LogicalOperator() (localctx ILogicalOperatorContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(69)
+		p.SetState(75)
 		_la = p.GetTokenStream().LA(1)
 
-		if !(((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 3584) != 0)) {
+		if !(((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 1792) != 0)) {
 			p.GetErrorHandler().RecoverInline(p)
 		} else {
 			p.GetErrorHandler().ReportMatch(p)

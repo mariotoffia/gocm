@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestVariousThings(t *testing.T) {
+func TestConditionLogical(t *testing.T) {
 
 	Expr().Cond().PK("PK").Condition(CondOperEqual).Value("P#SAAB").
 		And(
@@ -14,6 +14,13 @@ func TestVariousThings(t *testing.T) {
 		Or(
 			Expr().Cond().SK("SK").Condition(CondOperEqual).Att("sune"),
 		).
+		Build()
+}
+
+func TestProjectionWithOneCondition(t *testing.T) {
+	Expr().Project().Attribute("building", "PK").Attribute("room", "SK").
+		Cond().SK("room").Condition(CondOperEqual).Value("R#Lgh141").
+		Cond().PK("building").Condition(CondOperEqual).Value("B#Måssmyren 18").
 		Build()
 
 }

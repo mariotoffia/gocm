@@ -5,25 +5,6 @@ import (
 	"fmt"
 )
 
-// ExpressionType specifies the type of Expression.
-type ExpressionType string
-
-const (
-	// Projection specifies what attributes shall be returned, i.e. projected.
-	Projection ExpressionType = "projection"
-	// KeyCondition specifies the PK and possibly a SK condition
-	KeyCondition = "key-condition"
-	// Condition specifies a condition to be satisfied before the operation may proceed.
-	Condition = "condition"
-	// Filter specifies a filter condition that may not be executed
-	// in the remote technology.
-	//
-	// Depending on the implementation capability this may be executed remotely or not.
-	Filter = "filter"
-	// Update is a update expression
-	Update = "update"
-)
-
 // Expression is the base interface.
 type Expression interface {
 	Cond() *QualifierImpl
@@ -47,6 +28,10 @@ func (e *ExpressionImpl) Cond() *QualifierImpl {
 	q.condition = q
 
 	return q
+}
+
+func (e *ExpressionImpl) Project() *ProjectionImpl {
+	return &ProjectionImpl{ExpressionImpl: ExpressionImpl{root: e}}
 }
 
 // Build will build the expression

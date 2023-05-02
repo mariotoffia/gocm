@@ -19,6 +19,9 @@ type cmselectListener interface {
 	// EnterAttribute is called when entering the attribute production.
 	EnterAttribute(c *AttributeContext)
 
+	// EnterRhAttribute is called when entering the rhAttribute production.
+	EnterRhAttribute(c *RhAttributeContext)
+
 	// EnterFromClause is called when entering the fromClause production.
 	EnterFromClause(c *FromClauseContext)
 
@@ -30,6 +33,9 @@ type cmselectListener interface {
 
 	// EnterCondition is called when entering the condition production.
 	EnterCondition(c *ConditionContext)
+
+	// EnterRightHandExpression is called when entering the rightHandExpression production.
+	EnterRightHandExpression(c *RightHandExpressionContext)
 
 	// EnterParameter is called when entering the parameter production.
 	EnterParameter(c *ParameterContext)
@@ -49,6 +55,9 @@ type cmselectListener interface {
 	// ExitAttribute is called when exiting the attribute production.
 	ExitAttribute(c *AttributeContext)
 
+	// ExitRhAttribute is called when exiting the rhAttribute production.
+	ExitRhAttribute(c *RhAttributeContext)
+
 	// ExitFromClause is called when exiting the fromClause production.
 	ExitFromClause(c *FromClauseContext)
 
@@ -60,6 +69,9 @@ type cmselectListener interface {
 
 	// ExitCondition is called when exiting the condition production.
 	ExitCondition(c *ConditionContext)
+
+	// ExitRightHandExpression is called when exiting the rightHandExpression production.
+	ExitRightHandExpression(c *RightHandExpressionContext)
 
 	// ExitParameter is called when exiting the parameter production.
 	ExitParameter(c *ParameterContext)

@@ -3,33 +3,40 @@ grammar cmselect;
 query : selectClause fromClause whereClause;
 
 selectClause : SELECT attributeList;
-attributeList : (attribute | '*') (',' (attribute | '*'))*;
-attribute : IDENTIFIER;
+attributeList : attribute (',' attribute)*;
+attribute : (IDENTIFIER | '*') (AS IDENTIFIER)?;
+rhAttribute: IDENTIFIER;
 
 fromClause : FROM tableName;
 tableName : IDENTIFIER;
 
 whereClause : WHERE condition (logicalOperator condition)*;
-condition : attribute (EQUAL | NOT_EQUAL | LESS_THAN | GREATER_THAN | NOT_EQUAL_ALT) (NUMBER | STRING | parameter);
+condition : attribute (EQUAL | NOT_EQUAL | LESS_THAN | GREATER_THAN) rightHandExpression;
+rightHandExpression :  STRING | NUMBER | parameter| rhAttribute;
+
 parameter : ':' IDENTIFIER ':';
+
 logicalOperator : AND | OR | NOT;
 
 EQUAL : '==';
-NOT_EQUAL : '<>';
+NOT_EQUAL : '!=';
 LESS_THAN : '<';
 GREATER_THAN : '>';
-NOT_EQUAL_ALT : '!=';
 
 AND : 'AND';
 OR : 'OR';
 NOT : 'NOT';
+
+AS : 'AS';
 
 SELECT : 'SELECT';
 FROM : 'FROM';
 WHERE : 'WHERE';
 
 NUMBER : '-'? DIGIT+ ('.' DIGIT+)?;
-STRING : '\'' (~'\'' | '\'\'' )* '\'';
+
+// Add support for double-quoted strings
+STRING : ('\'' (~'\'' | '\'\'' )* '\'') | ('"' (~'"' | '""' )* '"');
 
 IDENTIFIER : LETTER (LETTER | DIGIT | '_' | '.')*;
 
