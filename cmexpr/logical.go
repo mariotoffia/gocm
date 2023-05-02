@@ -12,7 +12,7 @@ type LogicalImpl struct {
 }
 
 // And is takes a left hand side and a right hand side. It will combine
-// to evaluate true in both expressions to be true.
+// to evaluate true in all expressions to be true.
 func (l *LogicalImpl) And(expr ...Expression) *LogicalImpl {
 
 	l.and = expr
@@ -26,7 +26,7 @@ func (l *LogicalImpl) And(expr ...Expression) *LogicalImpl {
 
 }
 
-// Or is takes a left hand side and a right hand side. Either side needs
+// Or is takes a left hand side and a right hand side. All sides needs
 // to be true to result in true.
 func (l *LogicalImpl) Or(expr ...Expression) *LogicalImpl {
 
