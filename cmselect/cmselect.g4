@@ -10,7 +10,8 @@ fromClause : FROM tableName;
 tableName : IDENTIFIER;
 
 whereClause : WHERE condition (logicalOperator condition)*;
-condition : attribute (EQUAL | NOT_EQUAL | LESS_THAN | GREATER_THAN | NOT_EQUAL_ALT) (NUMBER | STRING);
+condition : attribute (EQUAL | NOT_EQUAL | LESS_THAN | GREATER_THAN | NOT_EQUAL_ALT) (NUMBER | STRING | parameter);
+parameter : ':' IDENTIFIER ':';
 logicalOperator : AND | OR | NOT;
 
 EQUAL : '==';

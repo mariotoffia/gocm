@@ -69,6 +69,12 @@ func (s *BasecmselectListener) EnterCondition(ctx *ConditionContext) {}
 // ExitCondition is called when production condition is exited.
 func (s *BasecmselectListener) ExitCondition(ctx *ConditionContext) {}
 
+// EnterParameter is called when production parameter is entered.
+func (s *BasecmselectListener) EnterParameter(ctx *ParameterContext) {}
+
+// ExitParameter is called when production parameter is exited.
+func (s *BasecmselectListener) ExitParameter(ctx *ParameterContext) {}
+
 // EnterLogicalOperator is called when production logicalOperator is entered.
 func (s *BasecmselectListener) EnterLogicalOperator(ctx *LogicalOperatorContext) {}
 

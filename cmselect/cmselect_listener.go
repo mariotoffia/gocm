@@ -32,6 +32,9 @@ type cmselectListener interface {
 	// EnterCondition is called when entering the condition production.
 	EnterCondition(c *ConditionContext)
 
+	// EnterParameter is called when entering the parameter production.
+	EnterParameter(c *ParameterContext)
+
 	// EnterLogicalOperator is called when entering the logicalOperator production.
 	EnterLogicalOperator(c *LogicalOperatorContext)
 
@@ -58,6 +61,9 @@ type cmselectListener interface {
 
 	// ExitCondition is called when exiting the condition production.
 	ExitCondition(c *ConditionContext)
+
+	// ExitParameter is called when exiting the parameter production.
+	ExitParameter(c *ParameterContext)
 
 	// ExitLogicalOperator is called when exiting the logicalOperator production.
 	ExitLogicalOperator(c *LogicalOperatorContext)
