@@ -3,11 +3,6 @@ package cmexpr
 // AllAttributes is the wildcard for all attributes and cannot have a alias.
 const AllAttributes = "*"
 
-type Projection interface {
-	Expression
-	Attributes() []ProjectionPair
-}
-
 type ProjectionPair struct {
 	Alias     string
 	Attribute string
@@ -20,10 +15,6 @@ func (pp *ProjectionPair) IsWildCard() bool {
 type ProjectionImpl struct {
 	ExpressionImpl
 	attributes []ProjectionPair
-}
-
-func (p *ProjectionImpl) Attributes() []ProjectionPair {
-	return p.attributes
 }
 
 func (p *ProjectionImpl) Attribute(name string, alias ...string) *ProjectionImpl {

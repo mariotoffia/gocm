@@ -30,6 +30,7 @@
         "stretchr",
         "struct",
         "sune",
+        "varbind",
         "vval"
     ]
 }

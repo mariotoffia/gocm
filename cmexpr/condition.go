@@ -34,15 +34,11 @@ type ConditionImpl struct {
 	child *PostConditionImpl
 }
 
-// Condition is the generic condition function.
-func (c *ConditionImpl) Condition(oper ConditionOperation) *PostConditionImpl {
-
+// Expr is the generic condition function.
+func (c *ConditionImpl) Expr(oper ConditionOperation) *PostConditionImpl {
 	c.oper = oper
-
-	c.child = &PostConditionImpl{ExpressionImpl: &ExpressionImpl{
-		root:      c.root,
-		condition: c.condition,
-	}}
+	c.child = &PostConditionImpl{ExpressionImpl: ExpressionImpl{parent: c}}
+	c.childs = append(c.childs, c.child)
 
 	return c.child
 }

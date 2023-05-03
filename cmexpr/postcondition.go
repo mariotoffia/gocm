@@ -9,17 +9,17 @@ const (
 	// PostConditionValue is a value, values or a list of values.
 	PostConditionValue PostConditionType = "value"
 	// PostConditionVariableBinding specifies one or more variable binding
-	PostConditionVariableBinding PostConditionType = "variable-binding"
+	PostConditionVariableBinding PostConditionType = "varbind"
 )
 
 // PostConditionImpl is the right hand of the condition.
 type PostConditionImpl struct {
-	*ExpressionImpl
+	ExpressionImpl
+
 	name      string
 	t         PostConditionType
 	value     []any
 	variables []string
-	child     *LogicalImpl
 }
 
 // Value is one or more values. If multiple it is either a list or
@@ -29,13 +29,12 @@ func (pc *PostConditionImpl) Value(values ...any) *LogicalImpl {
 	pc.value = values
 	pc.t = PostConditionValue
 
-	pc.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
-		root:      pc.root,
-		condition: pc.condition,
-	}}
+	qualifier := pc.getRoot().condition
+	log := &LogicalImpl{ExpressionImpl: ExpressionImpl{parent: qualifier}}
 
-	return pc.child
+	qualifier.childs = append(qualifier.childs, log)
 
+	return log
 }
 
 // Bind expresses one or more bindings. This is when the
@@ -49,13 +48,12 @@ func (pc *PostConditionImpl) Bind(variable ...string) *LogicalImpl {
 	pc.variables = variable
 	pc.t = PostConditionValue
 
-	pc.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
-		root:      pc.root,
-		condition: pc.condition,
-	}}
+	qualifier := pc.getRoot().condition
+	log := &LogicalImpl{ExpressionImpl: ExpressionImpl{parent: qualifier}}
 
-	return pc.child
+	qualifier.childs = append(qualifier.childs, log)
 
+	return log
 }
 
 // Att expresses an attribute / property name in the data
@@ -64,11 +62,10 @@ func (pc *PostConditionImpl) Att(name string) *LogicalImpl {
 	pc.name = name
 	pc.t = PostConditionAttribute
 
-	pc.child = &LogicalImpl{ExpressionImpl: &ExpressionImpl{
-		root:      pc.root,
-		condition: pc.condition,
-	}}
+	qualifier := pc.getRoot().condition
+	log := &LogicalImpl{ExpressionImpl: ExpressionImpl{parent: qualifier}}
 
-	return pc.child
+	qualifier.childs = append(qualifier.childs, log)
 
+	return log
 }

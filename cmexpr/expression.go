@@ -7,35 +7,77 @@ import (
 
 // Expression is the base interface.
 type Expression interface {
-	Cond() *QualifierImpl
+	getChilds() []Expression
+	getParent() Expression
+	getRoot() *RootExpressionImpl
+}
+
+func (expr *ExpressionImpl) getChilds() []Expression {
+	return expr.childs
+}
+
+func (expr *ExpressionImpl) getParent() Expression {
+	return expr.parent
+}
+
+func (expr *ExpressionImpl) getRoot() *RootExpressionImpl {
+	var e Expression = expr
+
+	for {
+		if e.getParent() == nil {
+			break
+		}
+		e = e.getParent()
+	}
+
+	return e.(*RootExpressionImpl)
 }
 
 // ExpressionImpl is the base struct
 type ExpressionImpl struct {
-	root      *ExpressionImpl
-	condition *QualifierImpl
+	parent Expression
+	childs []Expression
+}
+
+type RootExpressionImpl struct {
+	ExpressionImpl
+	condition  *QualifierLogicalImpl
+	projection *ProjectionImpl
 }
 
 // Expr creates a new expression
-func Expr() *ExpressionImpl {
-	return &ExpressionImpl{}
+func Expr() *RootExpressionImpl {
+	return &RootExpressionImpl{}
 }
 
-// Cond creates a condition expression.
-func (e *ExpressionImpl) Cond() *QualifierImpl {
+// Where creates a condition expression.
+func (e *RootExpressionImpl) Where() *QualifierLogicalImpl {
 
-	q := &QualifierImpl{ExpressionImpl: ExpressionImpl{root: e}}
-	q.condition = q
+	if e.condition != nil {
+		panic("condition expression already created")
+	}
 
-	return q
+	e.condition = &QualifierLogicalImpl{ExpressionImpl: ExpressionImpl{parent: e}}
+
+	e.childs = append(e.childs, e.condition)
+	return e.condition
 }
 
-func (e *ExpressionImpl) Project() *ProjectionImpl {
-	return &ProjectionImpl{ExpressionImpl: ExpressionImpl{root: e}}
+func (e *RootExpressionImpl) Project() *ProjectionImpl {
+	if e.projection != nil {
+		panic("projection expression already created")
+	}
+
+	e.projection = &ProjectionImpl{
+		ExpressionImpl: ExpressionImpl{parent: e},
+	}
+
+	e.childs = append(e.childs, e.projection)
+	return e.projection
 }
 
 // Build will build the expression
-func (e *ExpressionImpl) Build() {
+func (e *RootExpressionImpl) Build() {
 	// We got build. lets enumerate the trees.
 
 	if e.condition != nil {
@@ -48,7 +90,7 @@ func (e *ExpressionImpl) Build() {
 
 // ProcessQualifier will process a single qualifier and any
 // and, or, not expressions.
-func ProcessQualifier(qualifier *QualifierImpl) {
+func ProcessQualifier(qualifier *QualifierLogicalImpl) {
 
 	cond := qualifier.child
 	postCond := qualifier.child.child
@@ -64,11 +106,4 @@ func ProcessQualifier(qualifier *QualifierImpl) {
 
 	data, _ := json.Marshal(expr)
 	fmt.Println(string(data))
-
-	ProcessLogicalOper(postCond.child)
-}
-
-// ProcessLogicalOper will process and, or and not
-func ProcessLogicalOper(logic *LogicalImpl) {
-	// TODO: Implement me!
 }
