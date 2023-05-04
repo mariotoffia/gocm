@@ -4,6 +4,7 @@
         "Childs",
         "cment",
         "cmexpr",
+        "cmexprbuilder",
         "cmid",
         "cmmgr",
         "cmselect",
