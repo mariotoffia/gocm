@@ -60,6 +60,9 @@ func (b *SelectBuilder) Where() *WhereExpressionBuilder {
 type LogicalExprPropertyBuilders struct {
 	builderBaseImpl
 	conditions []*ConditionBuilder
+	and        []*LogicalExprPropertyBuilders
+	or         []*LogicalExprPropertyBuilders
+	not        *LogicalExprPropertyBuilders
 }
 
 type WhereExpressionBuilder struct {
@@ -111,6 +114,11 @@ func (b *WhereExpressionBuilder) SK(name ...string) *ConditionBuilder {
 	return b.property(name[0], cmexpr.PropertyExpressionTypeTypeSortKey)
 }
 
+func And(and ...*WhereExpressionBuilder) *WhereExpressionBuilder {
+	w := &WhereExpressionBuilder{}
+	return w.logical("AND", and)
+}
+
 func (b *WhereExpressionBuilder) logical(oper string, log []*WhereExpressionBuilder) *WhereExpressionBuilder {
 	if len(log) == 0 {
 		panic(fmt.Sprintf("not supported: empty %s", oper))
@@ -118,21 +126,45 @@ func (b *WhereExpressionBuilder) logical(oper string, log []*WhereExpressionBuil
 
 	l := &LogicalExprPropertyBuilders{
 		builderBaseImpl: builderBaseImpl{
-			parent:   b,
-			children: make([]builderBase, len(log)),
+			parent: b,
 		},
-		conditions: make([]*ConditionBuilder, len(log)),
 	}
 
 	for i := range log {
-		if log[i].parent != nil {
+		log := log[i]
+		if log.parent != nil {
 			panic("expecting a detached builder")
 		}
 
-		child := log[i].children[0].(*ConditionBuilder)
-		child.parent = l
-		l.children[i] = child
-		l.conditions[i] = child
+		for _, pe := range log.propertyExpressions {
+			pe.parent = l
+			l.conditions = append(l.conditions, pe)
+			l.children = append(l.children, pe)
+		}
+
+		log.propertyExpressions = nil
+
+		if len(log.and) > 0 {
+			for _, a := range log.and {
+				a.parent = l
+				l.and = append(l.and, a)
+				l.children = append(l.children, a)
+			}
+		}
+
+		if len(log.or) > 0 {
+			for _, o := range log.or {
+				o.parent = l
+				l.or = append(l.or, o)
+				l.children = append(l.children, o)
+			}
+		}
+
+		if log.not != nil {
+			log.not.parent = l
+			l.not = log.not
+			l.children = append(l.children, log.not)
+		}
 	}
 
 	switch oper {
@@ -156,16 +188,17 @@ func (b *WhereExpressionBuilder) And(and ...*WhereExpressionBuilder) *WhereExpre
 
 func Property(name string) *ConditionBuilder {
 	w := &WhereExpressionBuilder{}
-	c := &ConditionBuilder{
-		builderBaseImpl: builderBaseImpl{parent: w},
-		name:            name,
-		attrType:        cmexpr.PropertyExpressionTypeProperty,
-	}
+	return w.property(name, cmexpr.PropertyExpressionTypeProperty)
+}
 
-	w.children = append(w.children, c)
-	w.propertyExpressions = append(w.propertyExpressions, c)
+func PK(name ...string) *ConditionBuilder {
+	w := &WhereExpressionBuilder{}
+	return w.PK(name...)
+}
 
-	return c
+func SK(name ...string) *ConditionBuilder {
+	w := &WhereExpressionBuilder{}
+	return w.SK(name...)
 }
 
 type ConditionBuilder struct {

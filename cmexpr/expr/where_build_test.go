@@ -16,6 +16,10 @@ func TestSimpleExpression(t *testing.T) {
 		And(
 			Property("age").Condition(cmexpr.ConditionTypeGreaterThan).Value(18),
 			Property("building").Condition(cmexpr.ConditionTypeEquals).Value("A"),
+			And(
+				PK().Condition(cmexpr.ConditionTypeEquals).Value("999"),
+				SK().Condition(cmexpr.ConditionTypeEquals).Value("888"),
+			),
 		).
 		Build()
 
