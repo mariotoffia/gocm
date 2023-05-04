@@ -8,7 +8,13 @@ type SelectExpression struct {
 
 type WhereExpression struct {
 	// Condition when single condition and no logical expressions.
-	Condition      *ConditionExpression
+	Condition   *ConditionExpression
+	LogicScopes []*LogicalOperatorScope
+}
+
+type LogicalOperatorScope struct {
+	LogicScopes []*LogicalOperatorScope
+
 	AndExpressions []*AndExpression
 	OrExpressions  []*OrExpression
 	NotExpression  *NotExpression
