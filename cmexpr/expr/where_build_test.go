@@ -1,4 +1,4 @@
-package cmexprbuilder
+package expr
 
 import (
 	"fmt"
