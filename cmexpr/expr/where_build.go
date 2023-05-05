@@ -29,14 +29,15 @@ func (b *WhereExpressionBuilder) Build() *cmexpr.SelectExpression {
 	}
 
 	// Iterate nested logical expressions and add them nested Scopes expressions
-	var log func(l *LogicalExprPropertyBuilders, parent *cmexpr.LogicalOperatorScope)
+	var log func(l *LogicalExprPropertyBuilders, parent *cmexpr.LogicalOperatorScope, op string)
 
-	log = func(l *LogicalExprPropertyBuilders, parent *cmexpr.LogicalOperatorScope) {
+	log = func(l *LogicalExprPropertyBuilders, parent *cmexpr.LogicalOperatorScope, op string) {
 		if len(l.and) == 0 && len(l.or) == 0 && l.not == nil {
 			return
 		}
 
 		scp := &cmexpr.LogicalOperatorScope{}
+
 		if parent != nil {
 			parent.Scopes = append(parent.Scopes, scp)
 		} else {
@@ -47,6 +48,31 @@ func (b *WhereExpressionBuilder) Build() *cmexpr.SelectExpression {
 			s.Where.LogicScopes = append(s.Where.LogicScopes, scp)
 		}
 
+		switch op {
+		case "AND":
+			expr := &cmexpr.AndExpression{}
+			for _, v := range l.conditions {
+				expr.Conditions = append(expr.Conditions, v.toExpression())
+			}
+
+			scp.AndExpressions = append(scp.AndExpressions, expr)
+		case "OR":
+			expr := &cmexpr.OrExpression{}
+			for _, v := range l.conditions {
+				expr.Conditions = append(expr.Conditions, v.toExpression())
+			}
+
+			scp.OrExpressions = append(scp.OrExpressions, expr)
+		case "NOT":
+			if len(l.conditions) > 1 {
+				panic(fmt.Sprintf("not expression can only have one condition, got %d", len(l.conditions)))
+			}
+
+			scp.NotExpression = &cmexpr.NotExpression{
+				Condition: l.not.conditions[0].toExpression(),
+			}
+		}
+
 		for _, and := range l.and {
 			expr := &cmexpr.AndExpression{}
 			for _, c := range and.conditions {
@@ -55,7 +81,7 @@ func (b *WhereExpressionBuilder) Build() *cmexpr.SelectExpression {
 
 			scp.AndExpressions = append(scp.AndExpressions, expr)
 
-			log(and, scp)
+			log(and, scp, "AND")
 		}
 
 		for _, or := range l.or {
@@ -66,7 +92,7 @@ func (b *WhereExpressionBuilder) Build() *cmexpr.SelectExpression {
 
 			scp.OrExpressions = append(scp.OrExpressions, expr)
 
-			log(or, scp)
+			log(or, scp, "OR")
 		}
 
 		if l.not != nil {
@@ -78,20 +104,20 @@ func (b *WhereExpressionBuilder) Build() *cmexpr.SelectExpression {
 				Condition: l.not.conditions[0].toExpression(),
 			}
 
-			log(l.not, scp)
+			log(l.not, scp, "NOT")
 		}
 	}
 
 	for _, v := range b.and {
-		log(v, nil)
+		log(v, nil, "AND")
 	}
 
 	for _, v := range b.or {
-		log(v, nil)
+		log(v, nil, "OR")
 	}
 
 	if b.not != nil {
-		log(b.not, nil)
+		log(b.not, nil, "NOT")
 	}
 
 	return s
