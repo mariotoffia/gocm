@@ -59,10 +59,14 @@ func (b *SelectBuilder) Where() *WhereExpressionBuilder {
 
 type LogicalExprPropertyBuilders struct {
 	builderBaseImpl
+	// conditions is the conditions for AND, OR, NOT
 	conditions []*ConditionBuilder
-	and        []*LogicalExprPropertyBuilders
-	or         []*LogicalExprPropertyBuilders
-	not        *LogicalExprPropertyBuilders
+	// and is nested AND expressions
+	and []*LogicalExprPropertyBuilders
+	// or is nested OR expressions
+	or []*LogicalExprPropertyBuilders
+	// not is nested NOT expressions
+	not *LogicalExprPropertyBuilders
 }
 
 type WhereExpressionBuilder struct {

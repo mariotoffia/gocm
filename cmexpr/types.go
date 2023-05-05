@@ -13,7 +13,7 @@ type WhereExpression struct {
 }
 
 type LogicalOperatorScope struct {
-	LogicScopes []*LogicalOperatorScope
+	Scopes []*LogicalOperatorScope
 
 	AndExpressions []*AndExpression
 	OrExpressions  []*OrExpression
