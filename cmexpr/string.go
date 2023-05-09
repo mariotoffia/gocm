@@ -40,16 +40,32 @@ func (w *WhereExpression) String() string {
 func (l *LogicalOperatorScope) String() string {
 	str := ""
 
-	for _, v := range l.Scopes {
-		str += "(" + v.String() + ") "
+	for op, v := range l.Scopes {
+		str += string(op) + " (" + v.String() + ") "
 	}
 
-	for _, v := range l.AndExpressions {
-		str += v.String() + " "
+	if len(l.AndExpressions) > 0 {
+		if len(l.Scopes) > 0 {
+			str += "AND "
+		}
+
+		for _, v := range l.AndExpressions {
+			str += v.String() + " AND "
+		}
+
+		str = str[:len(str)-5]
 	}
 
-	for _, v := range l.OrExpressions {
-		str += v.String() + " "
+	if len(l.OrExpressions) > 0 {
+		if len(l.Scopes) > 0 && len(l.AndExpressions) == 0 {
+			str += "OR "
+		}
+
+		for _, v := range l.OrExpressions {
+			str += v.String() + " "
+		}
+
+		str = str[:len(str)-4]
 	}
 
 	if l.NotExpression != nil {

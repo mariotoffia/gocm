@@ -12,8 +12,16 @@ type WhereExpression struct {
 	LogicScopes []*LogicalOperatorScope
 }
 
+type LogicalOperator string
+
+const (
+	LogicalOperatorAnd LogicalOperator = "AND"
+	LogicalOperatorOr  LogicalOperator = "OR"
+	LogicalOperatorNot LogicalOperator = "NOT"
+)
+
 type LogicalOperatorScope struct {
-	Scopes []*LogicalOperatorScope
+	Scopes map[LogicalOperator]*LogicalOperatorScope
 
 	AndExpressions []*AndExpression
 	OrExpressions  []*OrExpression
